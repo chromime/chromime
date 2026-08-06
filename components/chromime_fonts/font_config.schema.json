@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chromime.org/schemas/font-config-v1.json",
+  "title": "Chromime deterministic font configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "font_pack",
+    "generic_families",
+    "fallback"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "description": {
+      "type": "string"
+    },
+    "font_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "manifest", "manifest_sha256"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+        },
+        "manifest": {
+          "type": "string",
+          "pattern": "^(?![A-Za-z]:|/|\\\\)(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$)).+$"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "generic_families": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standard",
+        "serif",
+        "sans_serif",
+        "monospace",
+        "system_ui",
+        "ui_serif",
+        "ui_sans_serif",
+        "ui_monospace",
+        "cursive",
+        "fantasy",
+        "math",
+        "emoji",
+        "fangsong"
+      ],
+      "properties": {
+        "standard": { "$ref": "#/$defs/family" },
+        "serif": { "$ref": "#/$defs/family" },
+        "sans_serif": { "$ref": "#/$defs/family" },
+        "monospace": { "$ref": "#/$defs/family" },
+        "system_ui": { "$ref": "#/$defs/family" },
+        "ui_serif": { "$ref": "#/$defs/family" },
+        "ui_sans_serif": { "$ref": "#/$defs/family" },
+        "ui_monospace": { "$ref": "#/$defs/family" },
+        "cursive": { "$ref": "#/$defs/family" },
+        "fantasy": { "$ref": "#/$defs/family" },
+        "math": { "$ref": "#/$defs/family" },
+        "emoji": { "$ref": "#/$defs/family" },
+        "fangsong": { "$ref": "#/$defs/family" }
+      }
+    },
+    "aliases": {
+      "type": "object",
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": { "$ref": "#/$defs/family" },
+      "default": {}
+    },
+    "fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "default_text_family",
+        "last_resort_family",
+        "emoji_family",
+        "math_family",
+        "cjk_by_language",
+        "ordered_family_classes"
+      ],
+      "properties": {
+        "strategy": { "const": "manifest_coverage_order_v1" },
+        "default_text_family": { "$ref": "#/$defs/family" },
+        "last_resort_family": { "$ref": "#/$defs/family" },
+        "emoji_family": { "$ref": "#/$defs/family" },
+        "math_family": { "$ref": "#/$defs/family" },
+        "cjk_by_language": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["zh-Hans", "zh-Hant", "zh-HK", "ja", "ko", "und"],
+          "properties": {
+            "zh-Hans": { "$ref": "#/$defs/familyList" },
+            "zh-Hant": { "$ref": "#/$defs/familyList" },
+            "zh-HK": { "$ref": "#/$defs/familyList" },
+            "ja": { "$ref": "#/$defs/familyList" },
+            "ko": { "$ref": "#/$defs/familyList" },
+            "und": { "$ref": "#/$defs/familyList" }
+          }
+        },
+        "ordered_family_classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "primary",
+              "noto_sans_script",
+              "noto_serif_script",
+              "symbols",
+              "math",
+              "music",
+              "emoji_text",
+              "specialist",
+              "last_resort"
+            ]
+          }
+        }
+      }
+    },
+    "rendering": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hinting": { "enum": ["none", "slight", "normal", "full"] },
+        "antialiasing": { "type": "boolean" },
+        "subpixel_positioning": { "type": "boolean" },
+        "subpixel_rendering": { "enum": ["none", "rgb", "bgr", "vrgb", "vbgr"] },
+        "embedded_bitmaps": { "type": "boolean" },
+        "autohinter": { "type": "boolean" },
+        "synthetic_bold": { "type": "boolean" },
+        "synthetic_italic": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "family": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "familyList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/family" }
+    }
+  }
+}

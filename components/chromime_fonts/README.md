@@ -1,0 +1,70 @@
+# Chromime deterministic fonts
+
+Chromime ordinary web content uses an explicit, versioned font pack. It must
+not enumerate, match, activate, or fall back to fonts installed on the host
+operating system. Browser-owned UI remains on Chromium's platform font path.
+
+## Security and determinism boundary
+
+The following rules are product invariants, not user preferences:
+
+- Host font discovery is denied for eligible ordinary web content.
+- CSS `@font-face local()` sources are skipped.
+- A configured font must resolve to a file in a verified font-pack manifest.
+- Every font file is verified by SHA-256 before it can enter the renderer font
+  cache.
+- Missing coverage ends in the pack's last-resort face or deterministic tofu;
+  it never falls through to DirectWrite, CoreText, or Fontconfig.
+- Configuration and font-pack changes take effect only after browser restart.
+
+Downloaded web fonts remain permitted, but are separate from local font
+lookup and must use Chromime's common Fontations-backed creation path.
+
+## Storage model
+
+Small configuration and lock files live in the Chromium repository. Font
+binaries do not: the default pack is built from pinned upstream archives and
+published as an immutable Chromime font-pack artifact.
+
+An installed application has this logical layout:
+
+```text
+<application resources>/chromime-fonts/
+  active-profile.json
+  packs/
+    noto-canonical-2026.08.01-1/
+      manifest.json
+      licenses/
+      fonts/
+```
+
+Platform packaging maps `<application resources>` as follows:
+
+- Windows: beside `chrome.exe`, under `chromime-fonts/`.
+- Linux: under the versioned Chromime library directory, under
+  `chromime-fonts/`.
+- macOS: inside `Chromime.app/Contents/Resources/chromime-fonts/`.
+
+The same manifest and font bytes are installed on all three platforms.
+
+User configuration is loaded from an explicit
+`--chromime-font-config=<absolute path>` command-line option, or from
+`ChromimeFontConfig.json` in the user-data directory. Relative pack paths are
+resolved relative to the configuration file, not the current directory.
+
+## Profiles
+
+The built-in `noto-kde-canonical-v1` profile is the default. Additional
+profiles can reproduce the *character* of another Linux distribution by
+shipping another exact, licensed font pack and changing generic-family and
+fallback mappings. They are not allowed to consult that distribution's
+installed fonts and should be described as “inspired” unless the complete
+distribution version and rendering environment are pinned.
+
+For example, an Ubuntu-inspired profile can bundle Ubuntu Sans and Ubuntu
+Mono as its primary families while retaining the pinned Noto pack for global
+coverage. A DejaVu-inspired profile can do the same with DejaVu. The profile
+must produce the same output on Windows, macOS, and Linux because it uses the
+same bytes everywhere.
+
+See `font_config.schema.json` for the configuration contract.

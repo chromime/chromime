@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "profile_id": "ubuntu-inspired-example",
+  "description": "Example only: exact user-supplied Ubuntu fonts with Noto fallback",
+  "font_pack": {
+    "id": "user-ubuntu-inspired-1",
+    "manifest": "packs/user-ubuntu-inspired-1/manifest.json",
+    "manifest_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "generic_families": {
+    "standard": "Ubuntu Sans",
+    "serif": "Noto Serif",
+    "sans_serif": "Ubuntu Sans",
+    "monospace": "Ubuntu Mono",
+    "system_ui": "Ubuntu Sans",
+    "ui_serif": "Noto Serif",
+    "ui_sans_serif": "Ubuntu Sans",
+    "ui_monospace": "Ubuntu Mono",
+    "cursive": "Noto Sans",
+    "fantasy": "Noto Sans Display",
+    "math": "Noto Sans Math",
+    "emoji": "Noto Color Emoji",
+    "fangsong": "Noto Serif CJK SC"
+  },
+  "aliases": {},
+  "fallback": {
+    "strategy": "manifest_coverage_order_v1",
+    "default_text_family": "Ubuntu Sans",
+    "last_resort_family": "Noto Sans Symbols 2",
+    "emoji_family": "Noto Color Emoji",
+    "math_family": "Noto Sans Math",
+    "cjk_by_language": {
+      "zh-Hans": ["Noto Sans CJK SC"],
+      "zh-Hant": ["Noto Sans CJK TC"],
+      "zh-HK": ["Noto Sans CJK HK"],
+      "ja": ["Noto Sans CJK JP"],
+      "ko": ["Noto Sans CJK KR"],
+      "und": ["Noto Sans CJK SC"]
+    },
+    "ordered_family_classes": [
+      "primary",
+      "noto_sans_script",
+      "noto_serif_script",
+      "symbols",
+      "math",
+      "music",
+      "emoji_text",
+      "specialist",
+      "last_resort"
+    ]
+  }
+}

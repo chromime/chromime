@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "profile_id": "noto-kde-canonical-v1",
+  "description": "Chromime canonical Noto profile, visually informed by pinned KDE Chromium",
+  "font_pack": {
+    "id": "noto-canonical-2026.08.01-1",
+    "manifest": "packs/noto-canonical-2026.08.01-1/manifest.json",
+    "manifest_sha256": "8fb7c72cd5444123ae8881276594744352b58f3e29c2630438b742d212092c11"
+  },
+  "generic_families": {
+    "standard": "Noto Sans",
+    "serif": "Noto Serif",
+    "sans_serif": "Noto Sans",
+    "monospace": "Noto Sans Mono",
+    "system_ui": "Noto Sans",
+    "ui_serif": "Noto Serif",
+    "ui_sans_serif": "Noto Sans",
+    "ui_monospace": "Noto Sans Mono",
+    "cursive": "Noto Sans",
+    "fantasy": "Noto Sans Display",
+    "math": "Noto Sans Math",
+    "emoji": "Noto Color Emoji",
+    "fangsong": "Noto Serif CJK SC"
+  },
+  "aliases": {
+    "Arial": "Noto Sans",
+    "Helvetica": "Noto Sans",
+    "Segoe UI": "Noto Sans",
+    "SF Pro": "Noto Sans",
+    "Times": "Noto Serif",
+    "Times New Roman": "Noto Serif",
+    "Georgia": "Noto Serif",
+    "Courier": "Noto Sans Mono",
+    "Courier New": "Noto Sans Mono"
+  },
+  "fallback": {
+    "strategy": "manifest_coverage_order_v1",
+    "default_text_family": "Noto Sans",
+    "last_resort_family": "Noto Sans Symbols 2",
+    "emoji_family": "Noto Color Emoji",
+    "math_family": "Noto Sans Math",
+    "cjk_by_language": {
+      "zh-Hans": ["Noto Sans CJK SC", "Noto Serif CJK SC"],
+      "zh-Hant": ["Noto Sans CJK TC", "Noto Serif CJK TC"],
+      "zh-HK": ["Noto Sans CJK HK", "Noto Serif CJK HK"],
+      "ja": ["Noto Sans CJK JP", "Noto Serif CJK JP"],
+      "ko": ["Noto Sans CJK KR", "Noto Serif CJK KR"],
+      "und": ["Noto Sans CJK SC", "Noto Serif CJK SC"]
+    },
+    "ordered_family_classes": [
+      "primary",
+      "noto_sans_script",
+      "noto_serif_script",
+      "symbols",
+      "math",
+      "music",
+      "emoji_text",
+      "specialist",
+      "last_resort"
+    ]
+  },
+  "rendering": {
+    "hinting": "slight",
+    "antialiasing": true,
+    "subpixel_positioning": true,
+    "subpixel_rendering": "none",
+    "embedded_bitmaps": true,
+    "autohinter": false,
+    "synthetic_bold": true,
+    "synthetic_italic": true
+  }
+}
