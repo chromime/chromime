@@ -364,7 +364,7 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kChromimeFontConfig) &&
               content::ChildProcessSecurityPolicy::GetInstance()
-                  ->ShouldUseChromimeFonts(render_process_id_));
+                  ->ShouldUseChromimeFonts(render_process_id_.value()));
       return;
     }
   }
