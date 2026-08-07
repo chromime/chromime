@@ -89,6 +89,29 @@ def verify(profile_path: Path, pack_dir: Path) -> tuple[dict, dict]:
     }
     if actual_licenses != listed_licenses:
         raise ValueError("license directory does not match the manifest")
+
+    available_families = {
+        face["family"]
+        for entry in manifest["files"]
+        for face in entry["faces"]
+    }
+    fallback = profile["fallback"]
+    required_families = {
+        *profile["generic_families"].values(),
+        *profile["aliases"].values(),
+        fallback["default_text_family"],
+        fallback["last_resort_family"],
+        fallback["emoji_family"],
+        fallback["math_family"],
+    }
+    for families in fallback["cjk_by_language"].values():
+        required_families.update(families)
+    missing_families = sorted(required_families - available_families)
+    if missing_families:
+        raise ValueError(
+            "profile references font families absent from the manifest: "
+            + ", ".join(missing_families)
+        )
     return profile, manifest
 
 
