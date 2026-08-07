@@ -9,7 +9,8 @@
     "profile_id",
     "font_pack",
     "generic_families",
-    "fallback"
+    "fallback",
+    "rendering"
   ],
   "properties": {
     "schema_version": {
@@ -133,15 +134,25 @@
     "rendering": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "hinting",
+        "antialiasing",
+        "subpixel_positioning",
+        "subpixel_rendering",
+        "embedded_bitmaps",
+        "autohinter",
+        "synthetic_bold",
+        "synthetic_italic"
+      ],
       "properties": {
-        "hinting": { "enum": ["none", "slight", "normal", "full"] },
-        "antialiasing": { "type": "boolean" },
-        "subpixel_positioning": { "type": "boolean" },
-        "subpixel_rendering": { "enum": ["none", "rgb", "bgr", "vrgb", "vbgr"] },
-        "embedded_bitmaps": { "type": "boolean" },
-        "autohinter": { "type": "boolean" },
-        "synthetic_bold": { "type": "boolean" },
-        "synthetic_italic": { "type": "boolean" }
+        "hinting": { "const": "slight" },
+        "antialiasing": { "const": true },
+        "subpixel_positioning": { "const": true },
+        "subpixel_rendering": { "const": "none" },
+        "embedded_bitmaps": { "const": true },
+        "autohinter": { "const": false },
+        "synthetic_bold": { "const": true },
+        "synthetic_italic": { "const": true }
       }
     }
   },

@@ -842,8 +842,11 @@ test("components_unittests") {
     ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
-    deps += [ "//components/services/font_data:unit_tests" ]
+  if (is_win || is_linux || is_chromeos || is_mac) {
+    deps += [
+      "//components/chromime_fonts:unit_tests",
+      "//components/services/font_data:unit_tests",
+    ]
   }
 
   if (is_win) {

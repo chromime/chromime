@@ -48,5 +48,15 @@
       "specialist",
       "last_resort"
     ]
+  },
+  "rendering": {
+    "hinting": "slight",
+    "antialiasing": true,
+    "subpixel_positioning": true,
+    "subpixel_rendering": "none",
+    "embedded_bitmaps": true,
+    "autohinter": false,
+    "synthetic_bold": true,
+    "synthetic_italic": true
   }
 }
