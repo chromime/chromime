@@ -265,6 +265,11 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     FontFallbackPriority fallback_priority) {
   TRACE_EVENT0("ui", "FontCache::PlatformFallbackFontForCharacter");
 
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return ChromimeFallbackFontForCharacter(font_description, character,
+                                            fallback_priority);
+  }
+
   // First try the specified font with standard style & weight.
   if (!IsEmojiPresentationEmoji(fallback_priority) &&
       (font_description.Style() == kItalicSlopeValue ||
@@ -414,8 +419,13 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
   sk_sp<SkTypeface> typeface;
 
   std::string name;
+  const bool chromime_fonts =
+      RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled();
 
   if (alternate_font_name == AlternateFontName::kLocalUniqueFace) {
+    if (chromime_fonts) {
+      return nullptr;
+    }
     typeface = CreateTypefaceFromUniqueName(creation_params);
 
     // We do not need to try any heuristic around the font name, as below, for
@@ -430,7 +440,8 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     // even if the face name is non-existent. We have to double-check and see if
     // the family name was really used.
     if (!typeface ||
-        !TypefacesMatchesFamily(typeface.get(), creation_params.Family())) {
+        (!chromime_fonts &&
+         !TypefacesMatchesFamily(typeface.get(), creation_params.Family()))) {
       AtomicString adjusted_name;
       FontSelectionValue variant_weight;
       FontSelectionValue variant_stretch;

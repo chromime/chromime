@@ -29,6 +29,7 @@ CONTENT_EXPORT extern const char kBrowserTest[];
 CONTENT_EXPORT extern const char kChangeStackGuardOnFork[];
 CONTENT_EXPORT extern const char kChangeStackGuardOnForkEnabled[];
 CONTENT_EXPORT extern const char kChangeStackGuardOnForkDisabled[];
+CONTENT_EXPORT extern const char kChromimeFontConfig[];
 CONTENT_EXPORT extern const char kDisable2dCanvasAntialiasing[];
 CONTENT_EXPORT extern const char kDisable2dCanvasImageChromium[];
 CONTENT_EXPORT extern const char kDisable3DAPIs[];

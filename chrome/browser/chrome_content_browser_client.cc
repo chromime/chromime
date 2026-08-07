@@ -2985,6 +2985,34 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   if (process_type == switches::kRendererProcess) {
     content::RenderProcessHost* process =
         content::RenderProcessHost::FromID(child_process_id);
+    content::ChildProcessSecurityPolicy* security_policy =
+        content::ChildProcessSecurityPolicy::GetInstance();
+    bool use_chromime_fonts =
+        process &&
+        browser_command_line.HasSwitch(switches::kChromimeFontConfig) &&
+        !security_policy->IsWebUIProcess(child_process_id);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    if (use_chromime_fonts) {
+      extensions::ProcessMap* extension_processes =
+          extensions::ProcessMap::Get(process->GetBrowserContext());
+      use_chromime_fonts = !extension_processes ||
+                           !extension_processes->Contains(process->GetID());
+    }
+#endif
+    security_policy->SetUseChromimeFonts(child_process_id,
+                                         use_chromime_fonts);
+
+    // Browser-owned WebUI and extension UI retain Chromium's platform font
+    // behavior. Their process isolation keeps ordinary web renderers on a
+    // separate, deterministic font path.
+    if (use_chromime_fonts) {
+      static const char* const kChromimeRendererSwitchNames[] = {
+          switches::kChromimeFontConfig,
+      };
+      command_line->CopySwitchesFrom(browser_command_line,
+                                     kChromimeRendererSwitchNames);
+    }
+
     if (process) {
       for (auto& part : extra_parts_) {
         part->AppendExtraRendererCommandLineSwitches(command_line, *process);

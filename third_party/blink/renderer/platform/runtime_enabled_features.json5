@@ -1151,6 +1151,12 @@
       status: "stable",
     },
     {
+      // Denies host font discovery and CSS local() sources when a verified
+      // Chromime font profile is active.
+      name: "ChromimeDeterministicFonts",
+      public: true,
+    },
+    {
       // crbug.com/517429018
       name: "ClampUnfocusedSelectionCache",
       status: "stable",
@@ -3229,6 +3235,7 @@
     },
     {
       name: "FontAccess",
+      public: true,
       status: {"Android": "", "default": "stable"},
     },
     {

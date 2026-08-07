@@ -174,6 +174,30 @@ TEST_F(ChromimeFontManagerTest, LoadsAliasesAndDeterministicFallback) {
   EXPECT_EQ(reference->collection_index, 0);
 }
 
+TEST_F(ChromimeFontManagerTest, LoadsFontsFromUnicodePath) {
+  const base::FilePath unicode_root = temp_directory_.GetPath().Append(
+      base::FilePath::FromUTF8Unsafe("\xE5\xAD\x97\xE4\xBD\x93"));
+  ASSERT_TRUE(base::CreateDirectory(unicode_root.AppendASCII("packs")));
+  const base::FilePath unicode_pack =
+      unicode_root.AppendASCII("packs").AppendASCII("test-pack");
+  ASSERT_TRUE(base::Move(pack_directory_, unicode_pack));
+  pack_directory_ = unicode_pack;
+  fonts_directory_ = pack_directory_.AppendASCII("fonts");
+  font_path_ = fonts_directory_.AppendASCII("Arimo-Regular.ttf");
+  config_path_ = unicode_root.AppendASCII("active-profile.json");
+
+  WriteProfile();
+  ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
+  ASSERT_TRUE(configured.font_manager) << configured.error;
+  sk_sp<SkTypeface> typeface = configured.font_manager->matchFamilyStyle(
+      "Arimo", SkFontStyle::Normal());
+  ASSERT_TRUE(typeface);
+  std::optional<FontFileReference> reference =
+      GetFontFileReference(*configured.font_manager, typeface->uniqueID());
+  ASSERT_TRUE(reference);
+  EXPECT_EQ(reference->path, font_path_);
+}
+
 TEST_F(ChromimeFontManagerTest, RejectsModifiedFontBytes) {
   WriteProfile();
   ASSERT_TRUE(base::WriteFile(font_path_, "tampered"));

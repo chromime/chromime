@@ -234,7 +234,8 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
   // Chromium currently always sets ENABLE_FREETYPE, but nonetheless allow
   // falling back to fontations if the param is set to freetype but freetype
   // isn't enabled.
-#if BUILDFLAG(ENABLE_FREETYPE)
+#if BUILDFLAG(ENABLE_FREETYPE) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   if (features::kFontDataServiceTypefaceType.Get() ==
       features::FontDataServiceTypefaceType::kFreetype) {
     return custom_fnt_mgr_->makeFromStream(std::move(stream), args);
@@ -350,6 +351,13 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
            .coordinateCount = base::checked_cast<int>(typeface_axis.size())});
     }
 
+    auto create_typeface = [&](std::unique_ptr<SkStreamAsset> stream) {
+      if (match_result->force_fontations) {
+        return SkTypeface_Make_Fontations(std::move(stream), args);
+      }
+      return onMakeFromStreamArgs(std::move(stream), args);
+    };
+
     // Attempt to create the typeface data based on the match result.
     if (match_result->typeface_data->is_font_file()) {
       TRACE_EVENT("fonts", "FontDataManager - using mapped file");
@@ -377,9 +385,8 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
 
       if (file_mapping) {
         const base::span<const uint8_t> font_data = file_mapping->bytes();
-        typeface = onMakeFromStreamArgs(
-            SkMemoryStream::MakeDirect(font_data.data(), font_data.size()),
-            args);
+        typeface = create_typeface(
+            SkMemoryStream::MakeDirect(font_data.data(), font_data.size()));
       }
     } else if (match_result->typeface_data->is_region() &&
                match_result->typeface_data->get_region().IsValid()) {
@@ -414,8 +421,8 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
 
       // Create the memory stream from the mapped memory.
       if (mapped_memory && mapped_size > 0) {
-        typeface = onMakeFromStreamArgs(
-            SkMemoryStream::MakeDirect(mapped_memory, mapped_size), args);
+        typeface = create_typeface(
+            SkMemoryStream::MakeDirect(mapped_memory, mapped_size));
       }
     }
   }

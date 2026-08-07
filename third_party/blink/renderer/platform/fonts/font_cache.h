@@ -255,6 +255,9 @@ class PLATFORM_EXPORT FontCache final {
       UChar32,
       const SimpleFontData* font_data_to_substitute,
       FontFallbackPriority = FontFallbackPriority::kText);
+  const SimpleFontData* ChromimeFallbackFontForCharacter(const FontDescription&,
+                                                         UChar32,
+                                                         FontFallbackPriority);
   sk_sp<SkTypeface> CreateTypefaceFromUniqueName(
       const FontFaceCreationParams& creation_params);
 

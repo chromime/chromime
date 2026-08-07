@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -301,6 +302,10 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontFaceCreationParams& creation_params,
     float font_size,
     AlternateFontName alternate_name) {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled() &&
+      alternate_name == AlternateFontName::kLocalUniqueFace) {
+    return nullptr;
+  }
   std::string name;
 
   sk_sp<SkTypeface> typeface;

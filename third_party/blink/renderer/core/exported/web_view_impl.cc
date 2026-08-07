@@ -3643,10 +3643,18 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
 
 void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 #if !BUILDFLAG(IS_MAC)
-  skia::LegacyDisplayGlobals::SetCachedParams(
-      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
-          renderer_preferences_.subpixel_rendering),
-      renderer_preferences_.text_contrast, renderer_preferences_.text_gamma);
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    const gfx::FontRenderParams canonical_params;
+    skia::LegacyDisplayGlobals::SetCachedParams(
+        gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+            gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE),
+        canonical_params.text_contrast, canonical_params.text_gamma);
+  } else {
+    skia::LegacyDisplayGlobals::SetCachedParams(
+        gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+            renderer_preferences_.subpixel_rendering),
+        renderer_preferences_.text_contrast, renderer_preferences_.text_gamma);
+  }
 #if BUILDFLAG(IS_WIN)
   // Cache the system font metrics in blink.
   WebFontRendering::SetMenuFontMetrics(

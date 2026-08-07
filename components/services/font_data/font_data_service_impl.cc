@@ -15,12 +15,14 @@
 #include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/chromime_fonts/chromime_font_manager.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -68,10 +70,23 @@ base::SequencedTaskRunner* GetFontDataServiceTaskRunner() {
   return task_runner->get();
 }
 
+font_data_service::FontDataServiceImpl* GetHostFontService() {
+  static base::NoDestructor<font_data_service::FontDataServiceImpl>
+      host_font_service;
+  return host_font_service.get();
+}
+
+font_data_service::FontDataServiceImpl* GetChromimeFontService() {
+  static base::NoDestructor<font_data_service::FontDataServiceImpl>
+      chromime_font_service(/*use_chromime_fonts=*/true);
+  return chromime_font_service.get();
+}
+
 void BindToFontService(
-    mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver) {
-  static base::NoDestructor<font_data_service::FontDataServiceImpl> service;
-  service->BindReceiver(std::move(receiver));
+    mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver,
+    bool use_chromime_fonts) {
+  (use_chromime_fonts ? GetChromimeFontService() : GetHostFontService())
+      ->BindReceiver(std::move(receiver));
 }
 
 constexpr SkFontStyle::Slant ConvertToFontStyle(mojom::TypefaceSlant slant) {
@@ -95,18 +110,36 @@ FontDataServiceImpl::MappedAsset::MappedAsset(
 
 FontDataServiceImpl::MappedAsset::~MappedAsset() = default;
 
-FontDataServiceImpl::FontDataServiceImpl()
-    : font_manager_(skia::DefaultFontMgr()),
-      local_font_matcher_(LocalFontMatcher::Create()) {
+FontDataServiceImpl::FontDataServiceImpl(bool use_chromime_fonts)
+    : chromime_mode_(use_chromime_fonts) {
+  if (chromime_mode_) {
+    chromime_fonts::ConfiguredFontManager configured_fonts =
+        chromime_fonts::LoadFromCommandLine();
+    if (!configured_fonts.enabled || !configured_fonts.font_manager) {
+      LOG(ERROR) << "Chromime font configuration rejected: "
+                 << (configured_fonts.error.empty()
+                         ? "no --chromime-font-config was provided"
+                         : configured_fonts.error);
+      font_manager_ = SkFontMgr::RefEmpty();
+    } else {
+      font_manager_ = std::move(configured_fonts.font_manager);
+    }
+  } else {
+    font_manager_ = skia::DefaultFontMgr();
+    local_font_matcher_ = LocalFontMatcher::Create();
+  }
   CHECK(font_manager_);
 }
 
 FontDataServiceImpl::~FontDataServiceImpl() = default;
 
 void FontDataServiceImpl::ConnectToFontService(
-    mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver) {
+    mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver,
+    bool use_chromime_fonts) {
   GetFontDataServiceTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&BindToFontService, std::move(receiver)));
+      FROM_HERE,
+      base::BindOnce(&BindToFontService, std::move(receiver),
+                     use_chromime_fonts));
 }
 
 void FontDataServiceImpl::BindReceiver(
@@ -117,6 +150,20 @@ void FontDataServiceImpl::BindReceiver(
 
 std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
     SkTypeface& typeface) {
+  if (chromime_mode_) {
+    std::optional<chromime_fonts::FontFileReference> reference =
+        chromime_fonts::GetFontFileReference(*font_manager_,
+                                             typeface.uniqueID());
+    if (!reference) {
+      return {};
+    }
+    base::File font_file(reference->path,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ |
+                             base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+    return std::make_tuple(std::move(font_file),
+                           GetUniqueFileId(reference->path));
+  }
+
   SkString font_path;
   typeface.getResourceName(&font_path);
   base::UmaHistogramBoolean("Chrome.FontDataService.EmptyPathOnGetFileHandle",
@@ -408,6 +455,7 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(
   CreateResult result_status = CreateResult::kNoTypeface;
 
   auto result = mojom::MatchFamilyNameResult::New();
+  result->force_fontations = chromime_mode_;
 
   if (typeface) {
     if (!CheckMatchesRequiredStyle(typeface->fontStyle(), family_name,

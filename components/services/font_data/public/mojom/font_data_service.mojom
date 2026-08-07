@@ -59,6 +59,10 @@ struct MatchFamilyNameResult {
   // Flags to indicate that bold/oblique are being internally simulated.
   bool synthetic_bold;
   bool synthetic_oblique;
+
+  // Recreate this typeface with Fontations regardless of the platform's
+  // experimental FontDataService typeface setting.
+  bool force_fontations;
 };
 
 // Loads and resolves fonts from the renderer to the browser (embedder). Takes

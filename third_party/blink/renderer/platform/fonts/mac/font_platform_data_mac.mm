@@ -210,6 +210,20 @@ const FontPlatformData* FontPlatformDataFromCTFont(
 
 SkFont FontPlatformData::CreateSkFont(
     const FontDescription* font_description) const {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    SkFont font(typeface_);
+    font.setEdging(SkFont::Edging::kAntiAlias);
+    font.setEmbeddedBitmaps(true);
+    font.setSize(SkFloatToScalar(text_size_ >= 0 ? text_size_ : 12));
+    font.setEmbolden(synthetic_bold_);
+    font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
+    font.setSubpixel(true);
+    font.setLinearMetrics(true);
+    font.setHinting(SkFontHinting::kSlight);
+    font.setForceAutoHinting(false);
+    return font;
+  }
+
   bool should_smooth_fonts = true;
   bool should_antialias = true;
   bool should_subpixel_position = true;

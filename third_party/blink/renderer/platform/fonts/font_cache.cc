@@ -256,6 +256,34 @@ const SimpleFontData* FontCache::FallbackFontForCharacter(
   return result;
 }
 
+const SimpleFontData* FontCache::ChromimeFallbackFontForCharacter(
+    const FontDescription& font_description,
+    UChar32 character,
+    FontFallbackPriority fallback_priority) {
+  const std::string family_name = font_description.Family().FamilyName().Utf8();
+  Bcp47Vector locales =
+      GetBcp47LocaleForRequest(font_description, fallback_priority);
+  sk_sp<SkTypeface> typeface =
+      skia::DefaultFontMgr()->matchFamilyStyleCharacter(
+          family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
+          locales.size(), character);
+  if (!typeface) {
+    return nullptr;
+  }
+
+  const bool synthetic_bold = font_description.Weight() >= kBoldThreshold &&
+                              !typeface->isBold() &&
+                              font_description.SyntheticBoldAllowed();
+  const bool synthetic_italic = font_description.Style() > kNormalSlopeValue &&
+                                !typeface->isItalic() &&
+                                font_description.SyntheticItalicAllowed();
+  const auto* platform_data = MakeGarbageCollected<FontPlatformData>(
+      std::move(typeface), std::string(), font_description.EffectiveFontSize(),
+      synthetic_bold, synthetic_italic, font_description.TextRendering(),
+      font_description.ResolveFontFeatures(), font_description.Orientation());
+  return FontDataFromFontPlatformData(platform_data);
+}
+
 void FontCache::AddClient(FontCacheClient* client) {
   CHECK(client);
   DCHECK(!font_cache_clients_.Contains(client));

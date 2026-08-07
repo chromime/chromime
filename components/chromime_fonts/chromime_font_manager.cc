@@ -139,7 +139,35 @@ struct FontFaceRecord {
   std::string family;
   std::string subfamily;
   SkFontStyle style;
-  base::FilePath path;
+  struct FontFileRecord {
+    explicit FontFileRecord(base::FilePath file_path)
+        : path(std::move(file_path)) {}
+
+    sk_sp<SkData> GetData() const {
+      base::AutoLock auto_lock(lock);
+      if (data) {
+        return data;
+      }
+      auto mapping = std::make_unique<base::MemoryMappedFile>();
+      if (!mapping->Initialize(path)) {
+        return nullptr;
+      }
+      base::span<const uint8_t> bytes = mapping->bytes();
+      data = SkData::MakeWithProc(
+          bytes.data(), bytes.size(),
+          [](const void*, void* context) {
+            delete static_cast<base::MemoryMappedFile*>(context);
+          },
+          mapping.release());
+      return data;
+    }
+
+    const base::FilePath path;
+    mutable base::Lock lock;
+    mutable sk_sp<SkData> data;
+  };
+
+  std::shared_ptr<FontFileRecord> file;
   int collection_index = 0;
   std::vector<std::pair<SkUnichar, SkUnichar>> coverage;
   mutable sk_sp<SkTypeface> typeface;
@@ -153,9 +181,9 @@ struct FontFaceRecord {
   }
 
   sk_sp<SkTypeface> GetTypeface() const {
+    base::AutoLock auto_lock(lock);
     if (!typeface) {
-      sk_sp<SkData> data =
-          SkData::MakeFromFileName(path.AsUTF8Unsafe().c_str());
+      sk_sp<SkData> data = file->GetData();
       if (data) {
         typeface = SkTypeface_Make_Fontations(
             std::move(data),
@@ -164,6 +192,13 @@ struct FontFaceRecord {
     }
     return typeface;
   }
+
+  bool HasTypefaceId(SkTypefaceID typeface_id) const {
+    base::AutoLock auto_lock(lock);
+    return typeface && typeface->uniqueID() == typeface_id;
+  }
+
+  mutable base::Lock lock;
 };
 
 class ChromimeFontStyleSet final : public SkFontStyleSet {
@@ -305,8 +340,8 @@ class ChromimeFontManager final : public SkFontMgr {
   std::optional<FontFileReference> GetFontFileReference(
       SkTypefaceID typeface_id) const {
     for (const std::shared_ptr<FontFaceRecord>& face : faces_) {
-      if (face->typeface && face->typeface->uniqueID() == typeface_id) {
-        return FontFileReference{face->path, face->collection_index};
+      if (face->HasTypefaceId(typeface_id)) {
+        return FontFileReference{face->file->path, face->collection_index};
       }
     }
     return std::nullopt;
@@ -627,6 +662,8 @@ ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
   }
 
   std::set<base::FilePath> verified_font_paths;
+  std::map<base::FilePath, std::shared_ptr<FontFaceRecord::FontFileRecord>>
+      font_files;
   std::map<std::string, std::string> family_classes;
   std::vector<std::shared_ptr<FontFaceRecord>> font_faces;
   for (const base::Value& file_value : *files) {
@@ -662,6 +699,13 @@ ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
                                              : std::move(error));
     }
     verified_font_paths.insert(font_path);
+    auto [font_file_it, inserted] = font_files.try_emplace(font_path);
+    if (inserted) {
+      font_file_it->second =
+          std::make_shared<FontFaceRecord::FontFileRecord>(font_path);
+    }
+    std::shared_ptr<FontFaceRecord::FontFileRecord> font_file =
+        font_file_it->second;
 
     for (const base::Value& face_value : *faces) {
       if (!face_value.is_dict()) {
@@ -690,7 +734,7 @@ ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
       auto record = std::make_shared<FontFaceRecord>();
       record->family = *family;
       record->subfamily = *subfamily;
-      record->path = font_path;
+      record->file = font_file;
       record->collection_index = *collection_index;
       const std::string lower_subfamily = LowerASCII(*subfamily);
       const SkFontStyle::Slant slant =

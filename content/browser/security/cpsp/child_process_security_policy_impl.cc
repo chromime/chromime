@@ -1278,6 +1278,7 @@ void ChildProcessSecurityPolicyImpl::Remove(ChildProcessId child_id) {
   // management is moved over to Rust.
 
   base::AutoLock lock(lock_);
+  chromime_font_processes_.erase(child_id.GetUnsafeValue());
   process_states_.PrepareToRemoveState(child_id);
 }
 
@@ -2210,6 +2211,33 @@ bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
     return state->has_web_ui_bindings();
   }
   return false;
+}
+
+bool ChildProcessSecurityPolicyImpl::IsWebUIProcess(int child_id) {
+  base::AutoLock lock(lock_);
+
+  // Bindings are granted before some process locks are finalized. Check both
+  // so callers get a stable answer throughout renderer startup.
+  if (auto* state = process_states_.GetProcessStateForQuery(
+          ChildProcessId::FromUnsafeValue(child_id))) {
+    return state->has_web_ui_bindings() || state->process_lock().IsWebUI();
+  }
+  return false;
+}
+
+void ChildProcessSecurityPolicyImpl::SetUseChromimeFonts(int child_id,
+                                                         bool enabled) {
+  base::AutoLock lock(lock_);
+  if (enabled) {
+    chromime_font_processes_.insert(child_id);
+  } else {
+    chromime_font_processes_.erase(child_id);
+  }
+}
+
+bool ChildProcessSecurityPolicyImpl::ShouldUseChromimeFonts(int child_id) {
+  base::AutoLock lock(lock_);
+  return chromime_font_processes_.contains(child_id);
 }
 
 bool ChildProcessSecurityPolicyImpl::ChildProcessHasPermissionsForFile(

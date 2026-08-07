@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/font_fallback_linux.h"
 
 namespace blink {
@@ -68,6 +69,11 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return ChromimeFallbackFontForCharacter(font_description, c,
+                                            fallback_priority);
+  }
+
   if (IsEmojiPresentationEmoji(fallback_priority)) {
     // FIXME crbug.com/591346: We're overriding the fallback character here
     // with the FAMILY emoji in the hope to find a suitable emoji font.

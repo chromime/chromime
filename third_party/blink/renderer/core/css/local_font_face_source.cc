@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -32,6 +33,9 @@ LocalFontFaceSource::LocalFontFaceSource(CSSFontFace* css_font_face,
 LocalFontFaceSource::~LocalFontFaceSource() {}
 
 bool LocalFontFaceSource::IsLocalNonBlocking() const {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return true;
+  }
   FontUniqueNameLookup* unique_name_lookup =
       FontGlobalContext::Get().GetFontUniqueNameLookup();
   if (!unique_name_lookup) {
@@ -42,6 +46,9 @@ bool LocalFontFaceSource::IsLocalNonBlocking() const {
 
 bool LocalFontFaceSource::IsLocalFontAvailable(
     const FontDescription& font_description) const {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return false;
+  }
   // TODO(crbug.com/1025945): Properly handle Windows prior to 10 and Android.
   bool font_available = FontCache::Get().IsPlatformFontUniqueNameMatchAvailable(
       font_description, font_name_);

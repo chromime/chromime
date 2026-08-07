@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 // clang-format on
 
+#include "base/command_line.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -27,9 +28,11 @@
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/common/features.h"
 #include "content/common/render_message_filter.mojom.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -78,7 +81,8 @@
 #include "content/public/common/font_cache_win.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #include "components/services/font_data/font_data_service_impl.h"
 #endif
 
@@ -350,12 +354,17 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
     }
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   if (features::IsFontDataServiceEnabled()) {
     if (auto font_data_receiver =
             receiver.As<font_data_service::mojom::FontDataService>()) {
       font_data_service::FontDataServiceImpl::ConnectToFontService(
-          std::move(font_data_receiver));
+          std::move(font_data_receiver),
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kChromimeFontConfig) &&
+              content::ChildProcessSecurityPolicy::GetInstance()
+                  ->ShouldUseChromimeFonts(render_process_id_));
       return;
     }
   }

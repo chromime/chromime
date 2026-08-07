@@ -230,6 +230,12 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     TextRenderingMode text_rendering) {
   WebFontRenderStyle result;
 
+  // A verified Chromime profile is the system font configuration for web
+  // content. Do not allow fontconfig or desktop settings to override it.
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return result;
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
   // If the font name is missing (i.e. probably a web font) or the sandbox is
   // disabled, use the system defaults.

@@ -58,6 +58,11 @@ const char kChangeStackGuardOnFork[] = "change-stack-guard-on-fork";
 const char kChangeStackGuardOnForkEnabled[] = "enable";
 const char kChangeStackGuardOnForkDisabled[] = "disable";
 
+// Uses the absolute path to a Chromime font profile for ordinary web content.
+// The profile and every listed font are verified before host font access is
+// replaced with the bundled font manager.
+const char kChromimeFontConfig[] = "chromime-font-config";
+
 // Disable antialiasing on 2d canvas.
 const char kDisable2dCanvasAntialiasing[]   = "disable-canvas-aa";
 

@@ -4,10 +4,12 @@
 
 #include "content/common/features.h"
 
+#include "base/command_line.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace features {
@@ -328,14 +330,21 @@ BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
 BASE_FEATURE(kFontDataServiceForCSSLocalFonts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 bool IsFontDataServiceEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kChromimeFontConfig)) {
+    return true;
+  }
 #if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(features::kFontDataServiceAllWebContents);
 #elif BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFontDataServiceLinux);
 #elif BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(features::kFontDataServiceChromeOS);
+#elif BUILDFLAG(IS_MAC)
+  return false;
 #else
   return false;
 #endif

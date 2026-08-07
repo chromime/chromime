@@ -42,6 +42,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -315,6 +316,11 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return ChromimeFallbackFontForCharacter(font_description, character,
+                                            fallback_priority);
+  }
+
   if (IsEmojiPresentationEmoji(fallback_priority)) {
     if (const SimpleFontData* emoji_font =
             GetFontData(font_description, AtomicString(kColorEmojiFontMac))) {
@@ -396,6 +402,28 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontFaceCreationParams& creation_params,
     float size,
     AlternateFontName alternate_name) {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    if (alternate_name == AlternateFontName::kLocalUniqueFace) {
+      return nullptr;
+    }
+    const std::string family_name = creation_params.Family().Utf8();
+    sk_sp<SkTypeface> typeface = skia::DefaultFontMgr()->matchFamilyStyle(
+        family_name.c_str(), font_description.SkiaFontStyle());
+    if (!typeface) {
+      return nullptr;
+    }
+    const bool synthetic_bold = font_description.Weight() >= kBoldThreshold &&
+                                !typeface->isBold() &&
+                                font_description.SyntheticBoldAllowed();
+    const bool synthetic_italic =
+        font_description.Style() > kNormalSlopeValue && !typeface->isItalic() &&
+        font_description.SyntheticItalicAllowed();
+    return MakeGarbageCollected<FontPlatformData>(
+        std::move(typeface), family_name, size, synthetic_bold,
+        synthetic_italic, font_description.TextRendering(),
+        font_description.ResolveFontFeatures(), font_description.Orientation());
+  }
+
   // CoreText restricts the access to the system dot prefixed fonts, so return
   // nullptr to use fallback font instead.
   if (IsSystemFontName(creation_params.Family())) {

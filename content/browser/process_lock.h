@@ -90,6 +90,9 @@ class CONTENT_EXPORT ProcessLock {
   // the lock was created.
   bool IsLockedToSite() const;
 
+  // Returns true when this lock belongs to a browser-owned WebUI scheme.
+  bool IsWebUI() const;
+
   // Returns the url that corresponds to the SiteInfo the lock is used with. It
   // will always be the same as the site URL, except in cases where effective
   // urls are in use. Always empty if the SiteInfo uses the default site url.

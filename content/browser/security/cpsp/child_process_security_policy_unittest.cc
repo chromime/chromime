@@ -1115,6 +1115,10 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
     LockProcessIfNeeded(kRendererProcess, browser_context(), url);
 
     EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
+    EXPECT_TRUE(p->IsWebUIProcess(kRendererID));
+    EXPECT_FALSE(p->ShouldUseChromimeFonts(kRendererID));
+    p->SetUseChromimeFonts(kRendererID, true);
+    EXPECT_TRUE(p->ShouldUseChromimeFonts(kRendererID));
 
     EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
     EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
@@ -1148,6 +1152,8 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
     EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
     p->Remove(kRendererProcess);
+    EXPECT_FALSE(p->IsWebUIProcess(kRendererID));
+    EXPECT_FALSE(p->ShouldUseChromimeFonts(kRendererID));
   }
 
   {

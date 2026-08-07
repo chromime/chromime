@@ -41,7 +41,7 @@ namespace font_data_service {
 // crbug.com/335680565 for more details.
 class FontDataServiceImpl : public mojom::FontDataService {
  public:
-  FontDataServiceImpl();
+  explicit FontDataServiceImpl(bool use_chromime_fonts = false);
 
   FontDataServiceImpl(const FontDataServiceImpl&) = delete;
   FontDataServiceImpl& operator=(const FontDataServiceImpl&) = delete;
@@ -50,7 +50,8 @@ class FontDataServiceImpl : public mojom::FontDataService {
 
   void BindReceiver(mojo::PendingReceiver<mojom::FontDataService> receiver);
   static void ConnectToFontService(
-      mojo::PendingReceiver<mojom::FontDataService> receiver);
+      mojo::PendingReceiver<mojom::FontDataService> receiver,
+      bool use_chromime_fonts);
 
   size_t GetCacheSizeForTesting() const {
     return typeface_to_asset_index_.size();
@@ -158,6 +159,11 @@ class FontDataServiceImpl : public mojom::FontDataService {
 
   // Handles local font matching by PostScript name or full font name.
   std::unique_ptr<LocalFontMatcher> local_font_matcher_;
+
+  // True when every request is constrained to a verified Chromime font pack.
+  // In this mode local() matching is denied and renderer typefaces are forced
+  // through the common Fontations path.
+  bool chromime_mode_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -10,6 +10,7 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
 
@@ -45,6 +46,9 @@ bool IsFreeTypeSystemRasterizer() {
 }
 
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return SkTypeface_Make_Fontations(data, SkFontArguments());
+  }
 #if BUILDFLAG(IS_WIN)
   return skia::DefaultFontMgr()->makeFromData(data, 0);
 #endif

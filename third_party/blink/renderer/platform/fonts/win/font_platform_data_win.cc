@@ -47,6 +47,11 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   font.setEmbolden(synthetic_bold_);
   font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    style_.ApplyToSkFont(&font);
+    return font;
+  }
+
   bool use_subpixel_rendering = style_.use_subpixel_rendering;
   bool use_anti_alias = style_.use_anti_alias;
 
@@ -79,6 +84,9 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
 WebFontRenderStyle FontPlatformData::QuerySystemForRenderStyle() {
   WebFontRenderStyle style;
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    return style;
+  }
   style.use_anti_alias = 0;
   style.use_subpixel_rendering = 0;
 

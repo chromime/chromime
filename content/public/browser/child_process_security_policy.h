@@ -204,6 +204,15 @@ class ChildProcessSecurityPolicy {
   // is allowed to use WebUI bindings.
   virtual bool HasWebUIBindings(int child_id) = 0;
 
+  // Returns true if the process is locked to any browser-owned WebUI scheme,
+  // including WebUIs that deliberately do not receive privileged bindings.
+  virtual bool IsWebUIProcess(int child_id) = 0;
+
+  // Records and queries whether an embedder assigned its deterministic
+  // Chromime web-font policy to this renderer process.
+  virtual void SetUseChromimeFonts(int child_id, bool enabled) = 0;
+  virtual bool ShouldUseChromimeFonts(int child_id) = 0;
+
   // Grants permission to send messages to any MIDI devices.
   virtual void GrantSendMidiMessage(int child_id) = 0;
 

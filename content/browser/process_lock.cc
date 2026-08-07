@@ -95,6 +95,10 @@ bool ProcessLock::IsLockedToSite() const {
          SiteInfo::GetOriginForUnlockedProcess();
 }
 
+bool ProcessLock::IsWebUI() const {
+  return site_info_.has_value() && site_info_->IsWebUI();
+}
+
 GURL ProcessLock::GetProcessLockURL() const {
   if (!site_info_.has_value()) {
     return GURL();

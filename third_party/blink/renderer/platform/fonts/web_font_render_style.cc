@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkFont.h"
 
@@ -60,6 +61,15 @@ void WebFontRenderStyle::SetSystemFontFamily(const WebString& name) {
 // static
 WebFontRenderStyle WebFontRenderStyle::GetDefault() {
   WebFontRenderStyle result;
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    result.hint_style = static_cast<char>(SkFontHinting::kSlight);
+    result.use_bitmaps = true;
+    result.use_auto_hint = false;
+    result.use_anti_alias = true;
+    result.use_subpixel_rendering = false;
+    result.use_subpixel_positioning = true;
+    return result;
+  }
   result.hint_style = static_cast<char>(g_skia_hinting);
   result.use_bitmaps = g_use_skia_bitmaps;
   result.use_auto_hint = g_use_skia_auto_hint;

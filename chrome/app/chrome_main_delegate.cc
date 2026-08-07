@@ -1108,6 +1108,37 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #if !defined(BUILDING_CHROME_RENDERER)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  if (!command_line.HasSwitch(switches::kProcessType)) {
+    base::CommandLine* mutable_command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (!command_line.HasSwitch(switches::kChromimeFontConfig)) {
+      base::FilePath assets_directory;
+      if (!base::PathService::Get(base::DIR_ASSETS, &assets_directory)) {
+        LOG(ERROR) << "Could not locate Chromime application resources";
+        return CHROME_RESULT_CODE_MISSING_DATA;
+      }
+      base::FilePath default_config =
+          assets_directory.AppendASCII("chromime-fonts")
+              .AppendASCII("active-profile.json");
+      if (!base::PathExists(default_config)) {
+        LOG(ERROR) << "Chromime font profile is missing: " << default_config;
+        return CHROME_RESULT_CODE_MISSING_DATA;
+      }
+      mutable_command_line->AppendSwitchPath(switches::kChromimeFontConfig,
+                                             default_config);
+    }
+    const base::FilePath configured_profile =
+        command_line.GetSwitchValuePath(switches::kChromimeFontConfig);
+    if (!configured_profile.IsAbsolute()) {
+      LOG(ERROR) << "--chromime-font-config requires an absolute path";
+      return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
+    }
+    if (!base::PathExists(configured_profile)) {
+      LOG(ERROR) << "Chromime font profile is missing: " << configured_profile;
+      return CHROME_RESULT_CODE_MISSING_DATA;
+    }
+  }
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 
   // Only allow disabling web security via the command-line flag if the user has
