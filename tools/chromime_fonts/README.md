@@ -39,3 +39,19 @@ python tools/chromime_fonts/build_noto_pack.py `
   --downloads C:\chromime\font-packs\downloads `
   --output C:\chromime\font-packs\build
 ```
+
+## Stage a verified pack
+
+Release packaging and local browser tests use the same staging command:
+
+```powershell
+python tools/chromime_fonts/stage_font_pack.py `
+  --profile components/chromime_fonts/profiles/noto-kde-canonical-v1.json `
+  --pack-dir C:\chromime\font-packs\build\noto-canonical-2026.08.01-1 `
+  --resources-dir out\BuildCheck
+```
+
+This creates `chromime-fonts/active-profile.json` plus the versioned pack under
+the selected resources directory. It verifies the manifest and every listed
+font before staging. Add `--hardlink` for a local Windows/Linux build on the
+same filesystem; release packaging should use the default independent copy.

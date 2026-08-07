@@ -47,10 +47,11 @@ Platform packaging maps `<application resources>` as follows:
 
 The same manifest and font bytes are installed on all three platforms.
 
-User configuration is loaded from an explicit
-`--chromime-font-config=<absolute path>` command-line option, or from
-`ChromimeFontConfig.json` in the user-data directory. Relative pack paths are
-resolved relative to the configuration file, not the current directory.
+Chromime loads `<application resources>/chromime-fonts/active-profile.json`
+automatically when it is installed. A user can select another profile with the
+explicit `--chromime-font-config=<absolute path>` command-line option. Relative
+pack paths are resolved relative to the configuration file, not the current
+directory.
 
 ## Profiles
 
