@@ -53,17 +53,26 @@ def verify(profile_path: Path, pack_dir: Path) -> tuple[dict, dict]:
     if font_pack["manifest"].replace("\\", "/") != expected_manifest:
         raise ValueError("profile manifest path does not match the staged layout")
 
-    listed_fonts: set[Path] = set()
-    for entry in manifest["files"]:
-        path = contained_path(pack_dir, entry["path"])
-        if not path.is_file():
-            raise ValueError(f"missing pack file: {entry['path']}")
-        if path.stat().st_size != entry["size"]:
-            raise ValueError(f"size mismatch: {entry['path']}")
-        if sha256(path) != entry["sha256"]:
-            raise ValueError(f"SHA-256 mismatch: {entry['path']}")
-        if path.suffix.lower() in FONT_EXTENSIONS:
-            listed_fonts.add(path)
+    def verify_entries(entries: list[dict], kind: str) -> set[Path]:
+        verified: set[Path] = set()
+        if not entries:
+            raise ValueError(f"manifest has no {kind} entries")
+        for entry in entries:
+            path = contained_path(pack_dir, entry["path"])
+            if not path.is_file():
+                raise ValueError(f"missing pack file: {entry['path']}")
+            if path.stat().st_size != entry["size"]:
+                raise ValueError(f"size mismatch: {entry['path']}")
+            if sha256(path) != entry["sha256"]:
+                raise ValueError(f"SHA-256 mismatch: {entry['path']}")
+            verified.add(path)
+        return verified
+
+    listed_files = verify_entries(manifest["files"], "font")
+    listed_licenses = verify_entries(manifest["licenses"], "license")
+    listed_fonts = {
+        path for path in listed_files if path.suffix.lower() in FONT_EXTENSIONS
+    }
 
     actual_fonts = {
         path.resolve()
@@ -73,6 +82,13 @@ def verify(profile_path: Path, pack_dir: Path) -> tuple[dict, dict]:
     extras = actual_fonts - listed_fonts
     if extras:
         raise ValueError(f"unlisted font file: {min(extras)}")
+    actual_licenses = {
+        path.resolve()
+        for path in (pack_dir / "licenses").rglob("*")
+        if path.is_file()
+    }
+    if actual_licenses != listed_licenses:
+        raise ValueError("license directory does not match the manifest")
     return profile, manifest
 
 
@@ -93,7 +109,7 @@ def stage(args: argparse.Namespace) -> Path:
         staged_pack.mkdir(parents=True)
         copy_function = os.link if args.hardlink else shutil.copy2
         copy_function(pack_dir / "manifest.json", staged_pack / "manifest.json")
-        for entry in manifest["files"]:
+        for entry in [*manifest["files"], *manifest["licenses"]]:
             source = contained_path(pack_dir, entry["path"])
             destination_file = staged_pack / Path(entry["path"])
             destination_file.parent.mkdir(parents=True, exist_ok=True)

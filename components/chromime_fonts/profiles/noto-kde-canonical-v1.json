@@ -5,7 +5,7 @@
   "font_pack": {
     "id": "noto-canonical-2026.08.01-1",
     "manifest": "packs/noto-canonical-2026.08.01-1/manifest.json",
-    "manifest_sha256": "8fb7c72cd5444123ae8881276594744352b58f3e29c2630438b742d212092c11"
+    "manifest_sha256": "6de02fe429bd2fe4a0999e2a45cff474572468ba3006e697a1f602701498e9c6"
   },
   "generic_families": {
     "standard": "Noto Sans",

@@ -358,6 +358,17 @@ def make_manifest(downloads: Path, pack_root: Path,
             "faces": read_faces(path),
         })
 
+    license_entries = []
+    license_paths = sorted(
+        path for path in (pack_root / "licenses").rglob("*")
+        if path.is_file())
+    for path in license_paths:
+        license_entries.append({
+            "path": path.relative_to(pack_root).as_posix(),
+            "size": path.stat().st_size,
+            "sha256": sha256(path),
+        })
+
     return {
         "schema_version": 1,
         "pack_id": PACK_ID,
@@ -375,6 +386,7 @@ def make_manifest(downloads: Path, pack_root: Path,
             "emoji": "cbdt-cblc",
         },
         "files": font_entries,
+        "licenses": license_entries,
     }
 
 

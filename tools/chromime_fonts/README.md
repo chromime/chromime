@@ -53,5 +53,6 @@ python tools/chromime_fonts/stage_font_pack.py `
 
 This creates `chromime-fonts/active-profile.json` plus the versioned pack under
 the selected resources directory. It verifies the manifest and every listed
-font before staging. Add `--hardlink` for a local Windows/Linux build on the
-same filesystem; release packaging should use the default independent copy.
+font and license before staging. Add `--hardlink` for a local Windows/Linux
+build on the same filesystem; release packaging should use the default
+independent copy.
