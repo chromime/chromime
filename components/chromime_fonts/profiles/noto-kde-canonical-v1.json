@@ -61,6 +61,8 @@
   },
   "rendering": {
     "hinting": "slight",
+    "text_gamma": 1.2,
+    "text_contrast": 0.2,
     "antialiasing": true,
     "subpixel_positioning": true,
     "subpixel_rendering": "none",

@@ -46,7 +46,9 @@ class ChromimeFontManagerTest : public testing::Test {
     config_path_ = temp_directory_.GetPath().AppendASCII("active-profile.json");
   }
 
-  void WriteProfile(bool antialiasing = true) {
+  void WriteProfile(bool antialiasing = true,
+                    double text_gamma = 1.2,
+                    double text_contrast = 0.2) {
     std::string font_bytes;
     ASSERT_TRUE(base::ReadFileToString(font_path_, &font_bytes));
 
@@ -116,6 +118,8 @@ class ChromimeFontManagerTest : public testing::Test {
 
     base::DictValue rendering;
     rendering.Set("hinting", "slight");
+    rendering.Set("text_gamma", text_gamma);
+    rendering.Set("text_contrast", text_contrast);
     rendering.Set("antialiasing", antialiasing);
     rendering.Set("subpixel_positioning", true);
     rendering.Set("subpixel_rendering", "none");
@@ -218,6 +222,15 @@ TEST_F(ChromimeFontManagerTest, RejectsUnlistedFontFile) {
 
 TEST_F(ChromimeFontManagerTest, RejectsHostDependentRendering) {
   WriteProfile(/*antialiasing=*/false);
+  ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
+  EXPECT_FALSE(configured.font_manager);
+  EXPECT_NE(configured.error.find("cross-platform rendering protocol"),
+            std::string::npos);
+}
+
+TEST_F(ChromimeFontManagerTest, RejectsDifferentTextTransferFunction) {
+  WriteProfile(/*antialiasing=*/true, /*text_gamma=*/1.4,
+               /*text_contrast=*/0.2);
   ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
   EXPECT_FALSE(configured.font_manager);
   EXPECT_NE(configured.error.find("cross-platform rendering protocol"),

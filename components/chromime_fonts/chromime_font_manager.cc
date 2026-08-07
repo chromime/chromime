@@ -569,6 +569,8 @@ bool ValidateRenderingProtocol(const base::DictValue* rendering,
   const std::string* subpixel_rendering =
       rendering ? rendering->FindString("subpixel_rendering") : nullptr;
   if (!rendering || !hinting || *hinting != "slight" ||
+      rendering->FindDouble("text_gamma") != 1.2 ||
+      rendering->FindDouble("text_contrast") != 0.2 ||
       rendering->FindBool("antialiasing") != true ||
       rendering->FindBool("subpixel_positioning") != true ||
       !subpixel_rendering || *subpixel_rendering != "none" ||

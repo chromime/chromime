@@ -69,12 +69,15 @@ coverage. A DejaVu-inspired profile can do the same with DejaVu. The profile
 must produce the same output on Windows, macOS, and Linux because it uses the
 same bytes everywhere.
 
-All profiles use the same rendering protocol: slight bytecode hinting,
-grayscale antialiasing, fractional glyph positioning, no LCD subpixel
-rendering, no autohinter, and embedded bitmaps enabled. A profile may change
-bundled families and deterministic fallback order, but it may not inherit or
-override these settings from the host OS. This restriction keeps an
-Ubuntu-inspired or DejaVu-inspired profile reproducible on every supported
-operating system.
+All profiles use the same rendering protocol: text gamma 1.2, text contrast
+0.2, slight bytecode hinting, grayscale antialiasing, fractional glyph
+positioning, no LCD subpixel rendering, no autohinter, and embedded bitmaps
+enabled. Chromime also uses one cross-platform ascent/descent rule and one
+maximum-character-width calculation for ordinary web content. These metrics
+keep text baselines and the intrinsic width of form controls independent of
+the Blink platform port. A profile may change bundled families and
+deterministic fallback order, but it may not inherit or override rendering
+settings from the host OS. This restriction keeps an Ubuntu-inspired or
+DejaVu-inspired profile reproducible on every supported operating system.
 
 See `font_config.schema.json` for the configuration contract.

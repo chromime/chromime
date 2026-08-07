@@ -178,26 +178,32 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 // In WebKit/WebCore/platform/graphics/SimpleFontData.cpp, m_spaceWidth is
 // calculated for us, but we need to calculate m_maxCharWidth and
 // m_avgCharWidth in order for text entry widgets to be sized correctly.
+  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+    // Platform ports use different approximations here. Text controls use
+    // this metric for their intrinsic inline size, so use one formula in all
+    // Chromime web renderers.
+    max_char_width_ = SkScalarRoundToInt(metrics.fXMax - metrics.fXMin);
+  } else {
 #if BUILDFLAG(IS_WIN)
-  max_char_width_ = SkScalarRoundToInt(metrics.fMaxCharWidth);
+    max_char_width_ = SkScalarRoundToInt(metrics.fMaxCharWidth);
 
-  // Older version of the DirectWrite API doesn't implement support for max
-  // char width. Fall back on a multiple of the ascent. This is entirely
-  // arbitrary but comes pretty close to the expected value in most cases.
-  if (max_char_width_ < 1)
-    max_char_width_ = ascent * 2;
+    // Older version of the DirectWrite API doesn't implement support for max
+    // char width. Fall back on a multiple of the ascent. This is entirely
+    // arbitrary but comes pretty close to the expected value in most cases.
+    if (max_char_width_ < 1)
+      max_char_width_ = ascent * 2;
 #elif BUILDFLAG(IS_APPLE)
-  // FIXME: The current avg/max character width calculation is not ideal,
-  // it should check either the OS2 table or, better yet, query FontMetrics.
-  // Sadly FontMetrics provides incorrect data on Mac at the moment.
-  // https://crbug.com/420901
-  max_char_width_ = std::max(avg_char_width_, font_metrics_.FloatAscent());
+    // FIXME: The current avg/max character width calculation is not ideal,
+    // it should check either the OS2 table or, better yet, query FontMetrics.
+    // Sadly FontMetrics provides incorrect data on Mac at the moment.
+    // https://crbug.com/420901
+    max_char_width_ = std::max(avg_char_width_, font_metrics_.FloatAscent());
 #else
-  // Better would be to rely on either fMaxCharWidth or fAveCharWidth.
-  // skbug.com/3087
-  max_char_width_ = SkScalarRoundToInt(metrics.fXMax - metrics.fXMin);
-
+    // Better would be to rely on either fMaxCharWidth or fAveCharWidth.
+    // skbug.com/3087
+    max_char_width_ = SkScalarRoundToInt(metrics.fXMax - metrics.fXMin);
 #endif
+  }
 
 #if !BUILDFLAG(IS_APPLE)
   if (metrics.fAvgCharWidth) {

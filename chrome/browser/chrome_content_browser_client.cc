@@ -2868,6 +2868,14 @@ bool ChromeContentBrowserClient::IsFileAccessAllowed(
 
 namespace {
 
+// These Skia command-line switches are intentionally applied only to ordinary
+// web renderers. Browser-owned WebUI and extension UI retain Chromium's
+// platform defaults along with their host font configuration.
+constexpr char kSkiaTextContrastSwitch[] = "text-contrast";
+constexpr char kSkiaTextGammaSwitch[] = "text-gamma";
+constexpr char kChromimeTextContrast[] = "0.2";
+constexpr char kChromimeTextGamma[] = "1.2";
+
 void MaybeAppendBlinkSettingsSwitchForFieldTrial(
     const base::CommandLine& browser_command_line,
     base::CommandLine* command_line) {
@@ -3011,6 +3019,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       };
       command_line->CopySwitchesFrom(browser_command_line,
                                      kChromimeRendererSwitchNames);
+      command_line->AppendSwitchASCII(kSkiaTextContrastSwitch,
+                                      kChromimeTextContrast);
+      command_line->AppendSwitchASCII(kSkiaTextGammaSwitch, kChromimeTextGamma);
     }
 
     if (process) {

@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
@@ -123,7 +124,8 @@ void FontMetrics::AscentDescentWithHacks(
     // the descent part of the glyph may be truncated when displayed in a
     // 'overflow: hidden' container.  To avoid that, borrow 1 unit from the
     // ascent when possible.
-    if (descent < metrics.fDescent &&
+    if (!RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled() &&
+        descent < metrics.fDescent &&
         platform_data.GetFontRenderStyle().use_subpixel_positioning &&
         ascent >= 1) {
       ++descent;
