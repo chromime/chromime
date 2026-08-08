@@ -209,9 +209,9 @@ class ChildProcessSecurityPolicy {
   virtual bool IsWebUIProcess(int child_id) = 0;
 
   // Records and queries whether an embedder assigned its deterministic
-  // Chromime web-font policy to this renderer process.
-  virtual void SetUseChromimeFonts(int child_id, bool enabled) = 0;
-  virtual bool ShouldUseChromimeFonts(int child_id) = 0;
+  // Rhendium web-font policy to this renderer process.
+  virtual void SetUseRhendiumFonts(int child_id, bool enabled) = 0;
+  virtual bool ShouldUseRhendiumFonts(int child_id) = 0;
 
   // Grants permission to send messages to any MIDI devices.
   virtual void GrantSendMidiMessage(int child_id) = 0;

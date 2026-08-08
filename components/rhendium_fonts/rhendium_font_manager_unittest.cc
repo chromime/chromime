@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/chromime_fonts/chromime_font_manager.h"
+#include "components/rhendium_fonts/rhendium_font_manager.h"
 
 #include <string>
 
@@ -20,14 +20,14 @@
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-namespace chromime_fonts {
+namespace rhendium_fonts {
 namespace {
 
 std::string Sha256(std::string_view bytes) {
   return base::HexEncodeLower(crypto::SHA256Hash(base::as_byte_span(bytes)));
 }
 
-class ChromimeFontManagerTest : public testing::Test {
+class RhendiumFontManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
@@ -150,7 +150,7 @@ class ChromimeFontManagerTest : public testing::Test {
   base::FilePath config_path_;
 };
 
-TEST_F(ChromimeFontManagerTest, LoadsAliasesAndDeterministicFallback) {
+TEST_F(RhendiumFontManagerTest, LoadsAliasesAndDeterministicFallback) {
   WriteProfile();
   ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
   ASSERT_TRUE(configured.font_manager) << configured.error;
@@ -178,7 +178,7 @@ TEST_F(ChromimeFontManagerTest, LoadsAliasesAndDeterministicFallback) {
   EXPECT_EQ(reference->collection_index, 0);
 }
 
-TEST_F(ChromimeFontManagerTest, LoadsFontsFromUnicodePath) {
+TEST_F(RhendiumFontManagerTest, LoadsFontsFromUnicodePath) {
   const base::FilePath unicode_root = temp_directory_.GetPath().Append(
       base::FilePath::FromUTF8Unsafe("\xE5\xAD\x97\xE4\xBD\x93"));
   ASSERT_TRUE(base::CreateDirectory(unicode_root.AppendASCII("packs")));
@@ -202,7 +202,7 @@ TEST_F(ChromimeFontManagerTest, LoadsFontsFromUnicodePath) {
   EXPECT_EQ(reference->path, font_path_);
 }
 
-TEST_F(ChromimeFontManagerTest, RejectsModifiedFontBytes) {
+TEST_F(RhendiumFontManagerTest, RejectsModifiedFontBytes) {
   WriteProfile();
   ASSERT_TRUE(base::WriteFile(font_path_, "tampered"));
   ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
@@ -211,7 +211,7 @@ TEST_F(ChromimeFontManagerTest, RejectsModifiedFontBytes) {
   EXPECT_NE(configured.error.find("size does not match"), std::string::npos);
 }
 
-TEST_F(ChromimeFontManagerTest, RejectsUnlistedFontFile) {
+TEST_F(RhendiumFontManagerTest, RejectsUnlistedFontFile) {
   WriteProfile();
   ASSERT_TRUE(base::CopyFile(source_font_,
                              fonts_directory_.AppendASCII("unlisted.ttf")));
@@ -220,7 +220,7 @@ TEST_F(ChromimeFontManagerTest, RejectsUnlistedFontFile) {
   EXPECT_NE(configured.error.find("unlisted file"), std::string::npos);
 }
 
-TEST_F(ChromimeFontManagerTest, RejectsHostDependentRendering) {
+TEST_F(RhendiumFontManagerTest, RejectsHostDependentRendering) {
   WriteProfile(/*antialiasing=*/false);
   ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
   EXPECT_FALSE(configured.font_manager);
@@ -228,7 +228,7 @@ TEST_F(ChromimeFontManagerTest, RejectsHostDependentRendering) {
             std::string::npos);
 }
 
-TEST_F(ChromimeFontManagerTest, RejectsDifferentTextTransferFunction) {
+TEST_F(RhendiumFontManagerTest, RejectsDifferentTextTransferFunction) {
   WriteProfile(/*antialiasing=*/true, /*text_gamma=*/1.4,
                /*text_contrast=*/0.2);
   ConfiguredFontManager configured = LoadFromConfigFile(config_path_);
@@ -238,4 +238,4 @@ TEST_F(ChromimeFontManagerTest, RejectsDifferentTextTransferFunction) {
 }
 
 }  // namespace
-}  // namespace chromime_fonts
+}  // namespace rhendium_fonts

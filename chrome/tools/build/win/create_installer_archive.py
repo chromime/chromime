@@ -211,8 +211,16 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
         for src_path in src_paths:
             dst_path = os.path.join(dst_dir, os.path.basename(src_path))
             if not os.path.exists(dst_path):
-                g_archive_inputs.append(os.path.relpath(src_path, src_dir))
-                shutil.copy(src_path, dst_dir)
+                if os.path.isdir(src_path):
+                    for root, _, files in os.walk(src_path):
+                        for filename in files:
+                            g_archive_inputs.append(
+                                os.path.relpath(os.path.join(root, filename),
+                                                src_dir))
+                    shutil.copytree(src_path, dst_path)
+                else:
+                    g_archive_inputs.append(os.path.relpath(src_path, src_dir))
+                    shutil.copy(src_path, dst_dir)
 
 
 def GenerateDiffPatch(options, orig_file, new_file, patch_file):

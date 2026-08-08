@@ -47,7 +47,7 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   font.setEmbolden(synthetic_bold_);
   font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     style_.ApplyToSkFont(&font);
     return font;
   }
@@ -84,7 +84,7 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
 WebFontRenderStyle FontPlatformData::QuerySystemForRenderStyle() {
   WebFontRenderStyle style;
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     return style;
   }
   style.use_anti_alias = 0;

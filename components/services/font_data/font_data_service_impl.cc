@@ -22,7 +22,7 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "components/chromime_fonts/chromime_font_manager.h"
+#include "components/rhendium_fonts/rhendium_font_manager.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -76,16 +76,16 @@ font_data_service::FontDataServiceImpl* GetHostFontService() {
   return host_font_service.get();
 }
 
-font_data_service::FontDataServiceImpl* GetChromimeFontService() {
+font_data_service::FontDataServiceImpl* GetRhendiumFontService() {
   static base::NoDestructor<font_data_service::FontDataServiceImpl>
-      chromime_font_service(/*use_chromime_fonts=*/true);
-  return chromime_font_service.get();
+      rhendium_font_service(/*use_rhendium_fonts=*/true);
+  return rhendium_font_service.get();
 }
 
 void BindToFontService(
     mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver,
-    bool use_chromime_fonts) {
-  (use_chromime_fonts ? GetChromimeFontService() : GetHostFontService())
+    bool use_rhendium_fonts) {
+  (use_rhendium_fonts ? GetRhendiumFontService() : GetHostFontService())
       ->BindReceiver(std::move(receiver));
 }
 
@@ -110,15 +110,15 @@ FontDataServiceImpl::MappedAsset::MappedAsset(
 
 FontDataServiceImpl::MappedAsset::~MappedAsset() = default;
 
-FontDataServiceImpl::FontDataServiceImpl(bool use_chromime_fonts)
-    : chromime_mode_(use_chromime_fonts) {
-  if (chromime_mode_) {
-    chromime_fonts::ConfiguredFontManager configured_fonts =
-        chromime_fonts::LoadFromCommandLine();
+FontDataServiceImpl::FontDataServiceImpl(bool use_rhendium_fonts)
+    : rhendium_mode_(use_rhendium_fonts) {
+  if (rhendium_mode_) {
+    rhendium_fonts::ConfiguredFontManager configured_fonts =
+        rhendium_fonts::LoadFromCommandLine();
     if (!configured_fonts.enabled || !configured_fonts.font_manager) {
-      LOG(ERROR) << "Chromime font configuration rejected: "
+      LOG(ERROR) << "Rhendium font configuration rejected: "
                  << (configured_fonts.error.empty()
-                         ? "no --chromime-font-config was provided"
+                         ? "no --rhendium-font-config was provided"
                          : configured_fonts.error);
       font_manager_ = SkFontMgr::RefEmpty();
     } else {
@@ -135,11 +135,11 @@ FontDataServiceImpl::~FontDataServiceImpl() = default;
 
 void FontDataServiceImpl::ConnectToFontService(
     mojo::PendingReceiver<font_data_service::mojom::FontDataService> receiver,
-    bool use_chromime_fonts) {
+    bool use_rhendium_fonts) {
   GetFontDataServiceTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BindToFontService, std::move(receiver),
-                     use_chromime_fonts));
+                     use_rhendium_fonts));
 }
 
 void FontDataServiceImpl::BindReceiver(
@@ -150,9 +150,9 @@ void FontDataServiceImpl::BindReceiver(
 
 std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
     SkTypeface& typeface) {
-  if (chromime_mode_) {
-    std::optional<chromime_fonts::FontFileReference> reference =
-        chromime_fonts::GetFontFileReference(*font_manager_,
+  if (rhendium_mode_) {
+    std::optional<rhendium_fonts::FontFileReference> reference =
+        rhendium_fonts::GetFontFileReference(*font_manager_,
                                              typeface.uniqueID());
     if (!reference) {
       return {};
@@ -455,7 +455,7 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(
   CreateResult result_status = CreateResult::kNoTypeface;
 
   auto result = mojom::MatchFamilyNameResult::New();
-  result->force_fontations = chromime_mode_;
+  result->force_fontations = rhendium_mode_;
 
   if (typeface) {
     if (!CheckMatchesRequiredStyle(typeface->fontStyle(), family_name,

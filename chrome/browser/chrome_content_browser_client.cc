@@ -2873,8 +2873,8 @@ namespace {
 // platform defaults along with their host font configuration.
 constexpr char kSkiaTextContrastSwitch[] = "text-contrast";
 constexpr char kSkiaTextGammaSwitch[] = "text-gamma";
-constexpr char kChromimeTextContrast[] = "0.2";
-constexpr char kChromimeTextGamma[] = "1.2";
+constexpr char kRhendiumTextContrast[] = "0.2";
+constexpr char kRhendiumTextGamma[] = "1.2";
 
 void MaybeAppendBlinkSettingsSwitchForFieldTrial(
     const base::CommandLine& browser_command_line,
@@ -2995,33 +2995,33 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         content::RenderProcessHost::FromID(child_process_id);
     content::ChildProcessSecurityPolicy* security_policy =
         content::ChildProcessSecurityPolicy::GetInstance();
-    bool use_chromime_fonts =
+    bool use_rhendium_fonts =
         process &&
-        browser_command_line.HasSwitch(switches::kChromimeFontConfig) &&
+        browser_command_line.HasSwitch(switches::kRhendiumFontConfig) &&
         !security_policy->IsWebUIProcess(child_process_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-    if (use_chromime_fonts) {
+    if (use_rhendium_fonts) {
       extensions::ProcessMap* extension_processes =
           extensions::ProcessMap::Get(process->GetBrowserContext());
-      use_chromime_fonts = !extension_processes ||
+      use_rhendium_fonts = !extension_processes ||
                            !extension_processes->Contains(process->GetID());
     }
 #endif
-    security_policy->SetUseChromimeFonts(child_process_id,
-                                         use_chromime_fonts);
+    security_policy->SetUseRhendiumFonts(child_process_id,
+                                         use_rhendium_fonts);
 
     // Browser-owned WebUI and extension UI retain Chromium's platform font
     // behavior. Their process isolation keeps ordinary web renderers on a
     // separate, deterministic font path.
-    if (use_chromime_fonts) {
-      static const char* const kChromimeRendererSwitchNames[] = {
-          switches::kChromimeFontConfig,
+    if (use_rhendium_fonts) {
+      static const char* const kRhendiumRendererSwitchNames[] = {
+          switches::kRhendiumFontConfig,
       };
       command_line->CopySwitchesFrom(browser_command_line,
-                                     kChromimeRendererSwitchNames);
+                                     kRhendiumRendererSwitchNames);
       command_line->AppendSwitchASCII(kSkiaTextContrastSwitch,
-                                      kChromimeTextContrast);
-      command_line->AppendSwitchASCII(kSkiaTextGammaSwitch, kChromimeTextGamma);
+                                      kRhendiumTextContrast);
+      command_line->AppendSwitchASCII(kSkiaTextGammaSwitch, kRhendiumTextGamma);
     }
 
     if (process) {

@@ -124,7 +124,7 @@ void FontMetrics::AscentDescentWithHacks(
     // the descent part of the glyph may be truncated when displayed in a
     // 'overflow: hidden' container.  To avoid that, borrow 1 unit from the
     // ascent when possible.
-    if (!RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled() &&
+    if (!RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled() &&
         descent < metrics.fDescent &&
         platform_data.GetFontRenderStyle().use_subpixel_positioning &&
         ascent >= 1) {

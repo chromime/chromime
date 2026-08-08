@@ -210,7 +210,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
 
 SkFont FontPlatformData::CreateSkFont(
     const FontDescription* font_description) const {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     SkFont font(typeface_);
     font.setEdging(SkFont::Edging::kAntiAlias);
     font.setEmbeddedBitmaps(true);

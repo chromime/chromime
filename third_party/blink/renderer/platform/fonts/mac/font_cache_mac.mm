@@ -316,8 +316,8 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
-    return ChromimeFallbackFontForCharacter(font_description, character,
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
+    return RhendiumFallbackFontForCharacter(font_description, character,
                                             fallback_priority);
   }
 
@@ -402,7 +402,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontFaceCreationParams& creation_params,
     float size,
     AlternateFontName alternate_name) {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     if (alternate_name == AlternateFontName::kLocalUniqueFace) {
       return nullptr;
     }

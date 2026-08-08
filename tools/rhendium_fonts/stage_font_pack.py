@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify and stage a Chromime font pack into an application resource tree."""
+"""Verify and stage a Rhendium font pack into an application resource tree."""
 
 from __future__ import annotations
 
@@ -121,12 +121,12 @@ def stage(args: argparse.Namespace) -> Path:
     _, manifest = verify(profile_path, pack_dir)
 
     resources_dir = args.resources_dir.resolve()
-    destination = resources_dir / "chromime-fonts"
+    destination = resources_dir / "rhendium-fonts"
     if destination.exists():
         raise ValueError(f"destination already exists: {destination}")
     resources_dir.mkdir(parents=True, exist_ok=True)
 
-    temporary = Path(tempfile.mkdtemp(prefix="chromime-fonts-", dir=resources_dir))
+    temporary = Path(tempfile.mkdtemp(prefix="rhendium-fonts-", dir=resources_dir))
     try:
         staged_pack = temporary / "packs" / manifest["pack_id"]
         staged_pack.mkdir(parents=True)

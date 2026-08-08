@@ -1,6 +1,6 @@
-# Chromime deterministic fonts
+# Rhendium deterministic fonts
 
-Chromime ordinary web content uses an explicit, versioned font pack. It must
+Rhendium ordinary web content uses an explicit, versioned font pack. It must
 not enumerate, match, activate, or fall back to fonts installed on the host
 operating system. Browser-owned UI remains on Chromium's platform font path.
 
@@ -18,18 +18,18 @@ The following rules are product invariants, not user preferences:
 - Configuration and font-pack changes take effect only after browser restart.
 
 Downloaded web fonts remain permitted, but are separate from local font
-lookup and must use Chromime's common Fontations-backed creation path.
+lookup and must use Rhendium's common Fontations-backed creation path.
 
 ## Storage model
 
 Small configuration and lock files live in the Chromium repository. Font
 binaries do not: the default pack is built from pinned upstream archives and
-published as an immutable Chromime font-pack artifact.
+published as an immutable Rhendium font-pack artifact.
 
 An installed application has this logical layout:
 
 ```text
-<application resources>/chromime-fonts/
+<application resources>/rhendium-fonts/
   active-profile.json
   packs/
     noto-canonical-2026.08.01-1/
@@ -40,17 +40,17 @@ An installed application has this logical layout:
 
 Platform packaging maps `<application resources>` as follows:
 
-- Windows: beside `chrome.exe`, under `chromime-fonts/`.
-- Linux: under the versioned Chromime library directory, under
-  `chromime-fonts/`.
-- macOS: inside `Chromime.app/Contents/Resources/chromime-fonts/`.
+- Windows: beside `chrome.exe`, under `rhendium-fonts/`.
+- Linux: under the versioned Rhendium library directory, under
+  `rhendium-fonts/`.
+- macOS: inside `Rhendium.app/Contents/Resources/rhendium-fonts/`.
 
 The same manifest and font bytes are installed on all three platforms.
 
-Chromime loads `<application resources>/chromime-fonts/active-profile.json`
+Rhendium loads `<application resources>/rhendium-fonts/active-profile.json`
 automatically and refuses to start if neither that resource nor an explicit
 profile is available. A user can select another profile with the explicit
-`--chromime-font-config=<absolute path>` command-line option. Relative pack
+`--rhendium-font-config=<absolute path>` command-line option. Relative pack
 paths are resolved relative to the configuration file, not the current
 directory.
 
@@ -72,7 +72,7 @@ same bytes everywhere.
 All profiles use the same rendering protocol: text gamma 1.2, text contrast
 0.2, slight bytecode hinting, grayscale antialiasing, fractional glyph
 positioning, no LCD subpixel rendering, no autohinter, and embedded bitmaps
-enabled. Chromime also uses one cross-platform ascent/descent rule and one
+enabled. Rhendium also uses one cross-platform ascent/descent rule and one
 maximum-character-width calculation for ordinary web content. These metrics
 keep text baselines and the intrinsic width of form controls independent of
 the Blink platform port. A profile may change bundled families and

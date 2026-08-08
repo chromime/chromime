@@ -46,7 +46,7 @@ bool IsFreeTypeSystemRasterizer() {
 }
 
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     return SkTypeface_Make_Fontations(data, SkFontArguments());
   }
 #if BUILDFLAG(IS_WIN)

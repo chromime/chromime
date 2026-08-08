@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://chromime.org/schemas/font-config-v1.json",
-  "title": "Chromime deterministic font configuration",
+  "$id": "https://rhendium.org/schemas/font-config-v1.json",
+  "title": "Rhendium deterministic font configuration",
   "type": "object",
   "additionalProperties": false,
   "required": [

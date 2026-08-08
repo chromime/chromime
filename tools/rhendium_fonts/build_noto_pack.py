@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Builds Chromime's deterministic default Noto font pack."""
+"""Builds Rhendium's deterministic default Noto font pack."""
 
 from __future__ import annotations
 

@@ -1,4 +1,20 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+# ![Rhendium logo](chrome/app/theme/chromium/product_logo_64.png) Rhendium
+
+> deterministic Chromium rendering
+
+Rhendium is a Chromium-based browser built to render ordinary web content the
+same way on Windows, Linux, and macOS. It pins the browser engine and rendering
+configuration, ships a verified Noto font pack, bypasses host font discovery
+and glyph fallback for normal webpages, and applies one cross-platform text
+rasterization protocol. A pinned KDE Chromium build is the visual design
+reference, while Rhendium's own reproducible rendering output is the final
+standard.
+
+Rhendium intentionally keeps each operating system's default Chromium browser
+interface. Cross-platform pixel consistency applies to webpage content, not to
+the native browser chrome, menus, window frame, or platform integrations.
+
+## Upstream Chromium
 
 Chromium is an open-source browser project that aims to build a safer, faster,
 and more stable way for all users to experience the web.

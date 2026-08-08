@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "noto-kde-canonical-v1",
-  "description": "Chromime canonical Noto profile, visually informed by pinned KDE Chromium",
+  "description": "Rhendium canonical Noto profile, visually informed by pinned KDE Chromium",
   "font_pack": {
     "id": "noto-canonical-2026.08.01-1",
     "manifest": "packs/noto-canonical-2026.08.01-1/manifest.json",

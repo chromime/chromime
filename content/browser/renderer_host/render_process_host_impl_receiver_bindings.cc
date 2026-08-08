@@ -362,9 +362,9 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
       font_data_service::FontDataServiceImpl::ConnectToFontService(
           std::move(font_data_receiver),
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kChromimeFontConfig) &&
+              switches::kRhendiumFontConfig) &&
               content::ChildProcessSecurityPolicy::GetInstance()
-                  ->ShouldUseChromimeFonts(render_process_id_.value()));
+                  ->ShouldUseRhendiumFonts(render_process_id_.value()));
       return;
     }
   }

@@ -178,10 +178,10 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 // In WebKit/WebCore/platform/graphics/SimpleFontData.cpp, m_spaceWidth is
 // calculated for us, but we need to calculate m_maxCharWidth and
 // m_avgCharWidth in order for text entry widgets to be sized correctly.
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     // Platform ports use different approximations here. Text controls use
     // this metric for their intrinsic inline size, so use one formula in all
-    // Chromime web renderers.
+    // Rhendium web renderers.
     max_char_width_ = SkScalarRoundToInt(metrics.fXMax - metrics.fXMin);
   } else {
 #if BUILDFLAG(IS_WIN)

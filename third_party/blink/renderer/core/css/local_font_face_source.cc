@@ -33,7 +33,7 @@ LocalFontFaceSource::LocalFontFaceSource(CSSFontFace* css_font_face,
 LocalFontFaceSource::~LocalFontFaceSource() {}
 
 bool LocalFontFaceSource::IsLocalNonBlocking() const {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     return true;
   }
   FontUniqueNameLookup* unique_name_lookup =
@@ -46,7 +46,7 @@ bool LocalFontFaceSource::IsLocalNonBlocking() const {
 
 bool LocalFontFaceSource::IsLocalFontAvailable(
     const FontDescription& font_description) const {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     return false;
   }
   // TODO(crbug.com/1025945): Properly handle Windows prior to 10 and Android.

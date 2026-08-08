@@ -265,8 +265,8 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     FontFallbackPriority fallback_priority) {
   TRACE_EVENT0("ui", "FontCache::PlatformFallbackFontForCharacter");
 
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
-    return ChromimeFallbackFontForCharacter(font_description, character,
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
+    return RhendiumFallbackFontForCharacter(font_description, character,
                                             fallback_priority);
   }
 
@@ -419,11 +419,11 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
   sk_sp<SkTypeface> typeface;
 
   std::string name;
-  const bool chromime_fonts =
-      RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled();
+  const bool rhendium_fonts =
+      RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled();
 
   if (alternate_font_name == AlternateFontName::kLocalUniqueFace) {
-    if (chromime_fonts) {
+    if (rhendium_fonts) {
       return nullptr;
     }
     typeface = CreateTypefaceFromUniqueName(creation_params);
@@ -440,7 +440,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     // even if the face name is non-existent. We have to double-check and see if
     // the family name was really used.
     if (!typeface ||
-        (!chromime_fonts &&
+        (!rhendium_fonts &&
          !TypefacesMatchesFamily(typeface.get(), creation_params.Family()))) {
       AtomicString adjusted_name;
       FontSelectionValue variant_weight;

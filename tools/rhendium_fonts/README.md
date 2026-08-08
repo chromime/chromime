@@ -1,6 +1,6 @@
-# Chromime font-pack builder
+# Rhendium font-pack builder
 
-`build_noto_pack.py` creates the default immutable Chromime font pack from
+`build_noto_pack.py` creates the default immutable Rhendium font pack from
 pinned official upstream inputs. It deliberately extracts one canonical font
 set rather than every redundant format in the upstream archives.
 
@@ -34,10 +34,10 @@ environment; do not add it to Chromium's general build environment.
 Example:
 
 ```powershell
-python -m pip install -r tools/chromime_fonts/requirements.txt
-python tools/chromime_fonts/build_noto_pack.py `
-  --downloads C:\chromime\font-packs\downloads `
-  --output C:\chromime\font-packs\build
+python -m pip install -r tools/rhendium_fonts/requirements.txt
+python tools/rhendium_fonts/build_noto_pack.py `
+  --downloads C:\rhendium\font-packs\downloads `
+  --output C:\rhendium\font-packs\build
 ```
 
 ## Stage a verified pack
@@ -45,13 +45,13 @@ python tools/chromime_fonts/build_noto_pack.py `
 Release packaging and local browser tests use the same staging command:
 
 ```powershell
-python tools/chromime_fonts/stage_font_pack.py `
-  --profile components/chromime_fonts/profiles/noto-kde-canonical-v1.json `
-  --pack-dir C:\chromime\font-packs\build\noto-canonical-2026.08.01-1 `
+python tools/rhendium_fonts/stage_font_pack.py `
+  --profile components/rhendium_fonts/profiles/noto-kde-canonical-v1.json `
+  --pack-dir C:\rhendium\font-packs\build\noto-canonical-2026.08.01-1 `
   --resources-dir out\BuildCheck
 ```
 
-This creates `chromime-fonts/active-profile.json` plus the versioned pack under
+This creates `rhendium-fonts/active-profile.json` plus the versioned pack under
 the selected resources directory. It verifies the manifest and every listed
 font and license before staging. Add `--hardlink` for a local Windows/Linux
 build on the same filesystem; release packaging should use the default

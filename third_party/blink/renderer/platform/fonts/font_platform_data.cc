@@ -230,9 +230,9 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     TextRenderingMode text_rendering) {
   WebFontRenderStyle result;
 
-  // A verified Chromime profile is the system font configuration for web
+  // A verified Rhendium profile is the system font configuration for web
   // content. Do not allow fontconfig or desktop settings to override it.
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     return result;
   }
 

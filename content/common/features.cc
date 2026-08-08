@@ -334,7 +334,7 @@ BASE_FEATURE(kFontDataServiceForCSSLocalFonts,
     BUILDFLAG(IS_MAC)
 bool IsFontDataServiceEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kChromimeFontConfig)) {
+          switches::kRhendiumFontConfig)) {
     return true;
   }
 #if BUILDFLAG(IS_WIN)

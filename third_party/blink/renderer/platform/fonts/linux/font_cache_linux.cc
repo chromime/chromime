@@ -69,8 +69,8 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
-    return ChromimeFallbackFontForCharacter(font_description, c,
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
+    return RhendiumFallbackFontForCharacter(font_description, c,
                                             fallback_priority);
   }
 

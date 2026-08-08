@@ -302,7 +302,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontFaceCreationParams& creation_params,
     float font_size,
     AlternateFontName alternate_name) {
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled() &&
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled() &&
       alternate_name == AlternateFontName::kLocalUniqueFace) {
     return nullptr;
   }

@@ -61,7 +61,7 @@ void WebFontRenderStyle::SetSystemFontFamily(const WebString& name) {
 // static
 WebFontRenderStyle WebFontRenderStyle::GetDefault() {
   WebFontRenderStyle result;
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     result.hint_style = static_cast<char>(SkFontHinting::kSlight);
     result.use_bitmaps = true;
     result.use_auto_hint = false;

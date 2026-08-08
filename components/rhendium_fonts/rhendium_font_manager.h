@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CHROMIME_FONTS_CHROMIME_FONT_MANAGER_H_
-#define COMPONENTS_CHROMIME_FONTS_CHROMIME_FONT_MANAGER_H_
+#ifndef COMPONENTS_RHENDIUM_FONTS_RHENDIUM_FONT_MANAGER_H_
+#define COMPONENTS_RHENDIUM_FONTS_RHENDIUM_FONT_MANAGER_H_
 
 #include <optional>
 #include <string>
@@ -14,9 +14,9 @@
 
 class SkFontMgr;
 
-namespace chromime_fonts {
+namespace rhendium_fonts {
 
-// The result of resolving and validating a Chromime font configuration.
+// The result of resolving and validating a Rhendium font configuration.
 // `enabled` is false only when no configuration was requested. If `enabled`
 // is true and `font_manager` is null, callers must fail closed and must not
 // fall back to host fonts.
@@ -32,19 +32,19 @@ struct FontFileReference {
   int collection_index = 0;
 };
 
-// Loads the absolute path supplied by --chromime-font-config. No host font
+// Loads the absolute path supplied by --rhendium-font-config. No host font
 // manager is consulted while loading or matching the resulting manager.
 ConfiguredFontManager LoadFromCommandLine();
 
 // Loads a profile directly. Exposed separately for tests and embedders.
 ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path);
 
-// Returns the verified pack file backing a typeface created by a Chromime font
+// Returns the verified pack file backing a typeface created by a Rhendium font
 // manager. Other managers and unknown typefaces return nullopt.
 std::optional<FontFileReference> GetFontFileReference(
     const SkFontMgr& font_manager,
     SkTypefaceID typeface_id);
 
-}  // namespace chromime_fonts
+}  // namespace rhendium_fonts
 
-#endif  // COMPONENTS_CHROMIME_FONTS_CHROMIME_FONT_MANAGER_H_
+#endif  // COMPONENTS_RHENDIUM_FONTS_RHENDIUM_FONT_MANAGER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/chromime_fonts/chromime_font_manager.h"
+#include "components/rhendium_fonts/rhendium_font_manager.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -37,13 +37,13 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
 
-namespace chromime_fonts {
+namespace rhendium_fonts {
 
 namespace {
 
 constexpr size_t kMaximumConfigBytes = 1024 * 1024;
 constexpr size_t kMaximumManifestBytes = 16 * 1024 * 1024;
-constexpr char kChromimeFontConfigSwitch[] = "chromime-font-config";
+constexpr char kRhendiumFontConfigSwitch[] = "rhendium-font-config";
 
 std::string LowerASCII(std::string_view value) {
   return base::ToLowerASCII(value);
@@ -201,9 +201,9 @@ struct FontFaceRecord {
   mutable base::Lock lock;
 };
 
-class ChromimeFontStyleSet final : public SkFontStyleSet {
+class RhendiumFontStyleSet final : public SkFontStyleSet {
  public:
-  explicit ChromimeFontStyleSet(
+  explicit RhendiumFontStyleSet(
       std::vector<std::shared_ptr<FontFaceRecord>> faces)
       : faces_(std::move(faces)) {}
 
@@ -235,11 +235,11 @@ class ChromimeFontStyleSet final : public SkFontStyleSet {
   const std::vector<std::shared_ptr<FontFaceRecord>> faces_;
 };
 
-class ChromimeFontManager;
+class RhendiumFontManager;
 
 struct FontManagerRegistry {
   base::Lock lock;
-  std::map<const SkFontMgr*, const ChromimeFontManager*> managers;
+  std::map<const SkFontMgr*, const RhendiumFontManager*> managers;
 };
 
 FontManagerRegistry& GetFontManagerRegistry() {
@@ -247,9 +247,9 @@ FontManagerRegistry& GetFontManagerRegistry() {
   return *registry;
 }
 
-class ChromimeFontManager final : public SkFontMgr {
+class RhendiumFontManager final : public SkFontMgr {
  public:
-  ChromimeFontManager(
+  RhendiumFontManager(
       std::vector<std::shared_ptr<FontFaceRecord>> faces,
       std::map<std::string, std::string> aliases,
       std::vector<std::string> ordered_family_classes,
@@ -307,7 +307,7 @@ class ChromimeFontManager final : public SkFontMgr {
     append_family(last_resort_family_);
   }
 
-  ~ChromimeFontManager() override {
+  ~RhendiumFontManager() override {
     FontManagerRegistry& registry = GetFontManagerRegistry();
     base::AutoLock lock(registry.lock);
     registry.managers.erase(this);
@@ -377,7 +377,7 @@ class ChromimeFontManager final : public SkFontMgr {
     }
     return candidates.empty()
                ? nullptr
-               : sk_make_sp<ChromimeFontStyleSet>(std::move(candidates))
+               : sk_make_sp<RhendiumFontStyleSet>(std::move(candidates))
                      ->matchStyle(style);
   }
 
@@ -439,7 +439,7 @@ class ChromimeFontManager final : public SkFontMgr {
     auto faces = faces_by_family_.find(LowerASCII(family));
     return faces == faces_by_family_.end()
                ? nullptr
-               : sk_make_sp<ChromimeFontStyleSet>(faces->second);
+               : sk_make_sp<RhendiumFontStyleSet>(faces->second);
   }
 
   sk_sp<SkTypeface> onMatchFamilyStyle(
@@ -579,7 +579,7 @@ bool ValidateRenderingProtocol(const base::DictValue* rendering,
       rendering->FindBool("synthetic_bold") != true ||
       rendering->FindBool("synthetic_italic") != true) {
     *error =
-        "Rendering must use the Chromime cross-platform rendering protocol";
+        "Rendering must use the Rhendium cross-platform rendering protocol";
     return false;
   }
   return true;
@@ -590,7 +590,7 @@ bool ValidateRenderingProtocol(const base::DictValue* rendering,
 ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
   if (!config_path.IsAbsolute()) {
     return Fail(config_path,
-                "Chromime font configuration path must be absolute");
+                "Rhendium font configuration path must be absolute");
   }
 
   std::string error;
@@ -835,7 +835,7 @@ ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
     cjk_by_language.emplace(language, std::move(families));
   }
 
-  sk_sp<ChromimeFontManager> font_manager = sk_make_sp<ChromimeFontManager>(
+  sk_sp<RhendiumFontManager> font_manager = sk_make_sp<RhendiumFontManager>(
       std::move(font_faces), std::move(aliases),
       std::move(ordered_family_classes), std::move(family_classes),
       std::move(cjk_by_language), *default_family, *last_resort_family,
@@ -855,11 +855,11 @@ ConfiguredFontManager LoadFromConfigFile(const base::FilePath& config_path) {
 ConfiguredFontManager LoadFromCommandLine() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(kChromimeFontConfigSwitch)) {
+  if (!command_line.HasSwitch(kRhendiumFontConfigSwitch)) {
     return {};
   }
   return LoadFromConfigFile(
-      command_line.GetSwitchValuePath(kChromimeFontConfigSwitch));
+      command_line.GetSwitchValuePath(kRhendiumFontConfigSwitch));
 }
 
 std::optional<FontFileReference> GetFontFileReference(
@@ -873,4 +873,4 @@ std::optional<FontFileReference> GetFontFileReference(
              : manager->second->GetFontFileReference(typeface_id);
 }
 
-}  // namespace chromime_fonts
+}  // namespace rhendium_fonts

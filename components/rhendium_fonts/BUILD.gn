@@ -4,10 +4,10 @@
 
 import("//testing/test.gni")
 
-source_set("chromime_fonts") {
+source_set("rhendium_fonts") {
   sources = [
-    "chromime_font_manager.cc",
-    "chromime_font_manager.h",
+    "rhendium_font_manager.cc",
+    "rhendium_font_manager.h",
   ]
 
   deps = [
@@ -19,9 +19,9 @@ source_set("chromime_fonts") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chromime_font_manager_unittest.cc" ]
+  sources = [ "rhendium_font_manager_unittest.cc" ]
   deps = [
-    ":chromime_fonts",
+    ":rhendium_fonts",
     "//base",
     "//base/test:test_support",
     "//crypto",
@@ -31,7 +31,7 @@ source_set("unit_tests") {
   data_deps = [ "//third_party/test_fonts" ]
 }
 
-test("chromime_font_manager_unittests") {
+test("rhendium_font_manager_unittests") {
   deps = [
     ":unit_tests",
     "//testing/gtest:gtest_main",

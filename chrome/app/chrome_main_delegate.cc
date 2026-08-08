@@ -1112,30 +1112,30 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   if (!command_line.HasSwitch(switches::kProcessType)) {
     base::CommandLine* mutable_command_line =
         base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kChromimeFontConfig)) {
+    if (!command_line.HasSwitch(switches::kRhendiumFontConfig)) {
       base::FilePath assets_directory;
       if (!base::PathService::Get(base::DIR_ASSETS, &assets_directory)) {
-        LOG(ERROR) << "Could not locate Chromime application resources";
+        LOG(ERROR) << "Could not locate Rhendium application resources";
         return CHROME_RESULT_CODE_MISSING_DATA;
       }
       base::FilePath default_config =
-          assets_directory.AppendASCII("chromime-fonts")
+          assets_directory.AppendASCII("rhendium-fonts")
               .AppendASCII("active-profile.json");
       if (!base::PathExists(default_config)) {
-        LOG(ERROR) << "Chromime font profile is missing: " << default_config;
+        LOG(ERROR) << "Rhendium font profile is missing: " << default_config;
         return CHROME_RESULT_CODE_MISSING_DATA;
       }
-      mutable_command_line->AppendSwitchPath(switches::kChromimeFontConfig,
+      mutable_command_line->AppendSwitchPath(switches::kRhendiumFontConfig,
                                              default_config);
     }
     const base::FilePath configured_profile =
-        command_line.GetSwitchValuePath(switches::kChromimeFontConfig);
+        command_line.GetSwitchValuePath(switches::kRhendiumFontConfig);
     if (!configured_profile.IsAbsolute()) {
-      LOG(ERROR) << "--chromime-font-config requires an absolute path";
+      LOG(ERROR) << "--rhendium-font-config requires an absolute path";
       return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
     }
     if (!base::PathExists(configured_profile)) {
-      LOG(ERROR) << "Chromime font profile is missing: " << configured_profile;
+      LOG(ERROR) << "Rhendium font profile is missing: " << configured_profile;
       return CHROME_RESULT_CODE_MISSING_DATA;
     }
   }

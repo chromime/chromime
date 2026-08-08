@@ -3643,7 +3643,7 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
 
 void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 #if !BUILDFLAG(IS_MAC)
-  if (RuntimeEnabledFeatures::ChromimeDeterministicFontsEnabled()) {
+  if (RuntimeEnabledFeatures::RhendiumDeterministicFontsEnabled()) {
     const gfx::FontRenderParams canonical_params;
     skia::LegacyDisplayGlobals::SetCachedParams(
         gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(

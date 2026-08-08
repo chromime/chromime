@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Brand-specific types and constants for Chromium.
+// Brand-specific types and constants for Rhendium.
 
 #ifndef CHROME_INSTALL_STATIC_CHROMIUM_INSTALL_MODES_H_
 #define CHROME_INSTALL_STATIC_CHROMIUM_INSTALL_MODES_H_
@@ -21,7 +21,7 @@ inline constexpr wchar_t kCompanyPathName[] = L"";
 
 // The brand-specific product name to be included as a component of the install
 // and user data directory paths.
-inline constexpr wchar_t kProductPathName[] = L"Chromium";
+inline constexpr wchar_t kProductPathName[] = L"Rhendium";
 
 // The brand-specific safe browsing client name.
 inline constexpr char kSafeBrowsingName[] = "chromium";
@@ -34,7 +34,7 @@ enum InstallConstantIndex {
 };
 
 inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
-    // The primary (and only) install mode for Chromium.
+    // The primary (and only) install mode for Rhendium.
     {
         .size = sizeof(InstallConstants),
         .index = CHROMIUM_INDEX,  // The one and only mode for Chromium.
@@ -45,15 +45,15 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .logo_suffix = L"",  // No logo suffix for the primary install mode.
         .app_guid =
             L"",  // Empty app_guid since no integration with Google Update.
-        .base_app_name = L"Chromium",              // A distinct base_app_name.
-        .base_app_id = L"Chromium",                // A distinct base_app_id.
-        .browser_prog_id_prefix = L"ChromiumHTM",  // Browser ProgID prefix.
+        .base_app_name = L"Rhendium",              // A distinct base_app_name.
+        .base_app_id = L"Rhendium",                // A distinct base_app_id.
+        .browser_prog_id_prefix = L"RhendiumHTM",  // Browser ProgID prefix.
         .browser_prog_id_description =
-            L"Chromium HTML Document",  // Browser ProgID description.
-        .direct_launch_url_scheme = "chromium",
-        .pdf_prog_id_prefix = L"ChromiumPDF",  // PDF ProgID prefix.
+            L"Rhendium HTML Document",  // Browser ProgID description.
+        .direct_launch_url_scheme = "rhendium",
+        .pdf_prog_id_prefix = L"RhendiumPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
-            L"Chromium PDF Document",  // PDF ProgID description.
+            L"Rhendium PDF Document",  // PDF ProgID description.
         .active_setup_guid =
             L"{7D2B3E1D-D096-4594-9D8F-A6667F12E0AC}",  // Active Setup
                                                         // GUID.

@@ -125,7 +125,7 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     if (auto font_data_receiver =
             receiver.As<font_data_service::mojom::FontDataService>()) {
       font_data_service::FontDataServiceImpl::ConnectToFontService(
-          std::move(font_data_receiver), /*use_chromime_fonts=*/false);
+          std::move(font_data_receiver), /*use_rhendium_fonts=*/false);
       return;
     }
   }

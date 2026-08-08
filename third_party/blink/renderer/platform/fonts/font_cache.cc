@@ -256,7 +256,7 @@ const SimpleFontData* FontCache::FallbackFontForCharacter(
   return result;
 }
 
-const SimpleFontData* FontCache::ChromimeFallbackFontForCharacter(
+const SimpleFontData* FontCache::RhendiumFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 character,
     FontFallbackPriority fallback_priority) {

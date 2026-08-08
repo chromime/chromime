@@ -6,30 +6,30 @@
 # chromium-browser packages for various platforms.
 
 # Base name of the package.
-PACKAGE="chromium-browser"
+PACKAGE="rhendium-browser"
 
 # Filename of the main executable (for generating launcher scripts, etc.)
 PROGNAME=chrome
 
 # Base directory for package installation.
-INSTALLDIR=/opt/chromium.org/chromium
+INSTALLDIR=/opt/rhendium.org/rhendium
 
 # Directory for device policy enrollments.
-ENROLLMENTDIR=/etc/chromium/policies/enrollment
+ENROLLMENTDIR=/etc/rhendium/policies/enrollment
 
 # Display string for desktop menu/icon.
-MENUNAME="Chromium Web Browser"
+MENUNAME="Rhendium Web Browser"
 
 # Brief package description.
-SHORTDESC="The web browser from the Chromium projects"
+SHORTDESC="A browser for deterministic Chromium rendering"
 
 # Detailed package description.
-FULLDESC="Chromium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
+FULLDESC="Rhendium is a Chromium-based browser designed to render ordinary web content consistently across operating systems."
 
 # Package maintainer information.
 MAINTNAME="Chromium Linux Team"
 MAINTMAIL="chromium-packagers@chromium.org"
-PRODUCTURL="https://www.chromium.org/Home"
+PRODUCTURL="https://github.com/rhendium/rhendium"
 
 PROJECT_LICENSE="BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)"
 
@@ -39,4 +39,4 @@ BUGTRACKERURL="https://www.chromium.org/for-testers/bug-reporting-guidelines"
 
 HELPURL="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md"
 
-RDN="org.chromium.Chromium"
+RDN="org.rhendium.Rhendium"

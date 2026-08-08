@@ -42,6 +42,7 @@ v8_context_snapshot.bin: %(VersionDir)s\
 #
 Extensions\*.*: %(VersionDir)s\Extensions\
 locales\*.pak: %(VersionDir)s\Locales
+rhendium-fonts: %(VersionDir)s\
 
 #
 # VisualElements sub-dir.

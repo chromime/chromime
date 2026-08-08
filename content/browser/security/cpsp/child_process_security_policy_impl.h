@@ -235,8 +235,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                const std::string& filesystem_id) override;
   bool HasWebUIBindings(int child_id) override;
   bool IsWebUIProcess(int child_id) override;
-  void SetUseChromimeFonts(int child_id, bool enabled) override;
-  bool ShouldUseChromimeFonts(int child_id) override;
+  void SetUseRhendiumFonts(int child_id, bool enabled) override;
+  bool ShouldUseRhendiumFonts(int child_id) override;
   void GrantSendMidiMessage(int child_id) override;
   void GrantSendMidiMessage_Cpp(int child_id);
   void GrantSendMidiSysExMessage(int child_id) override;
@@ -1230,7 +1230,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // corresponding ChildProcessSecurityPolicy::Handles are gone (when the state
   // can be queried but should not be modified).
   ProcessStateMaps process_states_ GUARDED_BY(lock_);
-  base::flat_set<int> chromime_font_processes_ GUARDED_BY(lock_);
+  base::flat_set<int> rhendium_font_processes_ GUARDED_BY(lock_);
 
   FileSystemPermissionPolicyMap file_system_policy_map_ GUARDED_BY(lock_);
 

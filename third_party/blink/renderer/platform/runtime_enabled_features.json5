@@ -1152,8 +1152,8 @@
     },
     {
       // Denies host font discovery and CSS local() sources when a verified
-      // Chromime font profile is active.
-      name: "ChromimeDeterministicFonts",
+      // Rhendium font profile is active.
+      name: "RhendiumDeterministicFonts",
       public: true,
     },
     {

@@ -1116,9 +1116,9 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
 
     EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
     EXPECT_TRUE(p->IsWebUIProcess(kRendererID));
-    EXPECT_FALSE(p->ShouldUseChromimeFonts(kRendererID));
-    p->SetUseChromimeFonts(kRendererID, true);
-    EXPECT_TRUE(p->ShouldUseChromimeFonts(kRendererID));
+    EXPECT_FALSE(p->ShouldUseRhendiumFonts(kRendererID));
+    p->SetUseRhendiumFonts(kRendererID, true);
+    EXPECT_TRUE(p->ShouldUseRhendiumFonts(kRendererID));
 
     EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
     EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
@@ -1153,7 +1153,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
 
     p->Remove(kRendererProcess);
     EXPECT_FALSE(p->IsWebUIProcess(kRendererID));
-    EXPECT_FALSE(p->ShouldUseChromimeFonts(kRendererID));
+    EXPECT_FALSE(p->ShouldUseRhendiumFonts(kRendererID));
   }
 
   {
