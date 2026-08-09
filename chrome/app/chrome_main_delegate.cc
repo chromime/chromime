@@ -267,6 +267,14 @@ ChromeMainDelegate::GetNonWildcardDomainNonPortSchemes() {
 
 namespace {
 
+#if !defined(BUILDING_CHROME_RENDERER)
+// Rhendium defaults ordinary browser launches to software compositing so the
+// same page follows the same compositor path on every supported platform.
+// Chromium already exposes --enable-gpu; Rhendium treats it as the explicit
+// opt-out from this deterministic default.
+constexpr char kEnableGpuSwitch[] = "enable-gpu";
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #if !defined(BUILDING_CHROME_RENDERER)
 // Early versions of Chrome incorrectly registered a chromehtml: URL handler,
@@ -1112,6 +1120,15 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   if (!command_line.HasSwitch(switches::kProcessType)) {
     base::CommandLine* mutable_command_line =
         base::CommandLine::ForCurrentProcess();
+    const bool enable_gpu = command_line.HasSwitch(kEnableGpuSwitch);
+    const bool disable_gpu = command_line.HasSwitch(switches::kDisableGpu);
+    if (enable_gpu && disable_gpu) {
+      LOG(ERROR) << "--enable-gpu conflicts with --disable-gpu";
+      return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
+    }
+    if (!enable_gpu && !disable_gpu) {
+      mutable_command_line->AppendSwitch(switches::kDisableGpu);
+    }
     if (!command_line.HasSwitch(switches::kRhendiumFontConfig)) {
       base::FilePath assets_directory;
       if (!base::PathService::Get(base::DIR_ASSETS, &assets_directory)) {

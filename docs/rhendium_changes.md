@@ -36,6 +36,8 @@ The current deterministic contract includes these invariants:
 - Text uses grayscale antialiasing, fractional positioning, slight bytecode
   hinting, gamma 1.2, contrast 0.2, no LCD subpixel rendering, no autohinter,
   and common ascent, descent, and maximum-character-width calculations.
+- Browser launches use software compositing by default so ordinary page
+  screenshots follow the same compositor path on every supported platform.
 - Profile or pack changes require a browser restart.
 
 These guarantees do not by themselves make GPU-dependent WebGL, WebGPU, video,
@@ -105,6 +107,12 @@ The standalone browser archive therefore needs an explicit switch unless the
 font pack has been installed in its application-resource location. The
 `@rhendium/browser` and `@rhendium/playwright` packages supply the external
 profile automatically.
+
+Rhendium also adds `--disable-gpu` to browser launches by default. Chromium's
+existing `--enable-gpu` switch is the explicit opt-out for workloads that need
+GPU acceleration; those launches are outside Rhendium's pixel-consistency
+contract. Supplying both switches is an unsupported conflicting configuration
+and fails startup.
 
 ## Renderer scoping and service isolation
 
@@ -191,8 +199,9 @@ Release validation must additionally cover:
 3. ordinary pages cannot resolve host-only fonts or `local()` sources;
 4. WebUI and browser-owned surfaces remain on Chromium's host font path;
 5. headed and headless screenshots and layout metrics are compared across all
-   supported operating systems under the same scale, viewport, color, locale,
-   and software/GPU policy;
+   supported operating systems under the same scale, viewport, color, and
+   locale, with default software compositing; `--enable-gpu` opt-out behavior
+   and conflicting GPU switches are tested separately;
 6. browser and font archives are separate and their size and SHA-256 values
    match the Playwright build manifest;
 7. Playwright launches and shuts down Rhendium without orphan processes.
