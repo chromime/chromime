@@ -1,6 +1,6 @@
 # ![Rhendium logo](chrome/app/theme/chromium/product_logo_64.png) Rhendium
 
-> deterministic Chromium rendering
+> Rhendium — Deterministic Chromium rendering, pixel for pixel.
 
 Rhendium is a Chromium-based browser built to render ordinary web content the
 same way on Windows, Linux, and macOS. It pins the browser engine and rendering
@@ -13,6 +13,24 @@ standard.
 Rhendium intentionally keeps each operating system's default Chromium browser
 interface. Cross-platform pixel consistency applies to webpage content, not to
 the native browser chrome, menus, window frame, or platform integrations.
+
+## Playwright
+
+```sh
+npm install --save-dev @playwright/test @rhendium/playwright
+npx rhendium install
+```
+
+```js
+import { defineConfig } from '@playwright/test';
+import { rhendiumProject } from '@rhendium/playwright';
+
+export default defineConfig({ projects: [rhendiumProject()] });
+```
+
+Run the tests with `npx playwright test --project=rhendium`; see
+[`rhendium-playwright`](https://github.com/rhendium/rhendium-playwright) for
+additional options.
 
 ## Upstream Chromium
 
