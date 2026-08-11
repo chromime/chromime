@@ -90,6 +90,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gl/gl_switches.h"
 
 #if !defined(BUILDING_CHROME_RENDERER)
 #include "chrome/browser/buildflags.h"                           // nogncheck
@@ -1126,8 +1127,18 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       LOG(ERROR) << "--enable-gpu conflicts with --disable-gpu";
       return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
     }
-    if (!enable_gpu && !disable_gpu) {
-      mutable_command_line->AppendSwitch(switches::kDisableGpu);
+    if (!enable_gpu) {
+      if (!disable_gpu) {
+        mutable_command_line->AppendSwitch(switches::kDisableGpu);
+      }
+      // Chromium requires an explicit opt-in before its bundled SwiftShader
+      // implementation may provide WebGL when hardware GPU acceleration is
+      // disabled. Keep software compositing as Rhendium's deterministic
+      // default, while allowing WebGL-only pages to use that software backend.
+      if (!command_line.HasSwitch(switches::kEnableUnsafeSwiftShader)) {
+        mutable_command_line->AppendSwitch(
+            switches::kEnableUnsafeSwiftShader);
+      }
     }
     if (!command_line.HasSwitch(switches::kRhendiumFontConfig)) {
       base::FilePath assets_directory;

@@ -38,6 +38,7 @@ The current deterministic contract includes these invariants:
   and common ascent, descent, and maximum-character-width calculations.
 - Browser launches use software compositing by default so ordinary page
   screenshots follow the same compositor path on every supported platform.
+  Chromium's bundled SwiftShader remains available for WebGL-only content.
 - Profile or pack changes require a browser restart.
 
 These guarantees do not by themselves make GPU-dependent WebGL, WebGPU, video,
@@ -108,11 +109,13 @@ font pack has been installed in its application-resource location. The
 `@rhendium/browser` and `@rhendium/playwright` packages supply the external
 profile automatically.
 
-Rhendium also adds `--disable-gpu` to browser launches by default. Chromium's
-existing `--enable-gpu` switch is the explicit opt-out for workloads that need
+Rhendium also adds `--disable-gpu` and `--enable-unsafe-swiftshader` to browser
+launches by default. This keeps software compositing while allowing Chromium's
+bundled SwiftShader to support pages that require WebGL. Chromium's existing
+`--enable-gpu` switch is the explicit opt-out for workloads that need hardware
 GPU acceleration; those launches are outside Rhendium's pixel-consistency
-contract. Supplying both switches is an unsupported conflicting configuration
-and fails startup.
+contract. Supplying `--enable-gpu` with `--disable-gpu` is an unsupported
+conflicting configuration and fails startup.
 
 ## Renderer scoping and service isolation
 
