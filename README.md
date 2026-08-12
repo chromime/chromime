@@ -2,13 +2,11 @@
 
 > Rhendium — Deterministic Chromium rendering, pixel for pixel.
 
-Rhendium is a Chromium-based browser built to render ordinary web content the
-same way on Windows, Linux, and macOS. It pins the browser engine and rendering
-configuration, ships a verified Noto font pack, bypasses host font discovery
-and glyph fallback for normal webpages, and applies one cross-platform text
-rasterization protocol. A pinned KDE Chromium build is the visual design
-reference, while Rhendium's own reproducible rendering output is the final
-standard.
+Rhendium is a Chromium-based browser designed for cross-platform visual testing.
+It renders ordinary web content the same way on Windows, Linux, and macOS by
+pinning the browser engine and rendering configuration, shipping a verified
+Noto font pack, bypassing host font discovery and glyph fallback for normal
+webpages, and applying one cross-platform text rasterization protocol.
 
 Rhendium intentionally keeps each operating system's default Chromium browser
 interface. Cross-platform pixel consistency applies to webpage content, not to
