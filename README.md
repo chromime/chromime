@@ -8,10 +8,6 @@ pinning the browser engine and rendering configuration, shipping a verified
 Noto font pack, bypassing host font discovery and glyph fallback for normal
 webpages, and applying one cross-platform text rasterization protocol.
 
-Rhendium intentionally keeps each operating system's default Chromium browser
-interface. Cross-platform pixel consistency applies to webpage content, not to
-the native browser chrome, menus, window frame, or platform integrations.
-
 ## Playwright
 
 ```sh
