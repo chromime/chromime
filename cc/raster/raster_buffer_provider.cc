@@ -65,11 +65,12 @@ void RasterBufferProvider::PlaybackToMemory(
                                        kPremul_SkAlphaType,
                                        target_color_space.ToSkColorSpace());
 
-  // Use unknown pixel geometry to disable LCD text.
-  SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
-  if (playback_settings.use_lcd_text) {
-    surface_props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  }
+  // Preserve the configured text contrast and gamma even when LCD text is
+  // disabled. Constructing SkSurfaceProps with only unknown pixel geometry
+  // falls back to platform-specific compile-time values instead.
+  SkSurfaceProps surface_props =
+      skia::LegacyDisplayGlobals::ComputeSurfaceProps(
+          playback_settings.use_lcd_text);
 
   if (!stride)
     stride = info.minRowBytes();

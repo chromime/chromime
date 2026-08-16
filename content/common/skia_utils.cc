@@ -14,6 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/font_utils.h"
+#include "skia/ext/rhendium_rendering.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -68,6 +69,12 @@ void InitializeSkia() {
   const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
   if (!cmd.HasSwitch(switches::kDisableSkiaRuntimeOpts)) {
     SkGraphics::Init();
+  }
+  if ((cmd.HasSwitch(switches::kRhendiumFontConfig) &&
+       cmd.GetSwitchValueASCII(switches::kProcessType) ==
+           switches::kRendererProcess) ||
+      cmd.HasSwitch(skia::kRhendiumCrossPlatformBlendingSwitch)) {
+    skia::EnableRhendiumCrossPlatformBlending();
   }
 
   constexpr int kMB = 1024 * 1024;

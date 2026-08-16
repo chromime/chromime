@@ -181,7 +181,16 @@ int RendererMain(MainFunctionParams parameters) {
 
   InitializeSkia();
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC)
+  // Rhendium installs FontDataManager in RendererBlinkPlatformImpl. Do not
+  // race that override with the normal asynchronous CoreText prewarm: once
+  // DefaultFontMgr() has initialized CoreText, a later override cannot replace
+  // the process-global manager.
+  if (!command_line.HasSwitch(switches::kRhendiumFontConfig)) {
+    base::ThreadPool::PostTask(FROM_HERE,
+                               base::BindOnce([] { skia::DefaultFontMgr(); }));
+  }
+#elif !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   // On Linux, Windows, and ChromeOS, the font manager is overridden or
   // specially handled in RendererBlinkPlatformImpl(). On other platforms,
   // initialise the default one on a thread pool, to avoid blocking on it later.

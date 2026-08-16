@@ -168,6 +168,15 @@ Rhendium also normalizes `FontPlatformData`, `SimpleFontData`,
 ordinary text metrics and raster choices do not inherit different Blink
 platform-port defaults.
 
+The renderer does not start macOS CoreText prewarming when Rhendium mode is
+active, because that asynchronous initialization can race the restricted font
+manager installation. Software raster surfaces preserve the configured gamma
+and contrast even when LCD text is disabled. On ARM, eligible renderer and
+GPU/Viz processes select Rhendium's source-over row blitter, which uses the
+same integer rounding as Skia's x86 SSE2/AVX2 path. These rules keep text,
+emoji transparency, and Canvas edges byte-identical without changing browser
+UI, WebUI, or extension renderer font behavior.
+
 ## Branding and application identity
 
 The Chromium branding resources identify the product as Rhendium. The initial
